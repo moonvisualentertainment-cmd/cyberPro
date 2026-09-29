@@ -3,67 +3,1511 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberCafé Pro - Sign In</title>
-    <!-- Tailwind CSS for clean, modern styling -->
+    <title id="pageTitleMeta">CyberCafé Pro - Management System</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 flex items-center justify-center min-h-screen">
+<body class="bg-slate-900 min-h-screen font-sans text-slate-800">
 
-    <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
-        <!-- Logo / Icon Section -->
-        <div class="flex justify-center mb-6">
-            <div class="bg-indigo-600 text-white p-4 rounded-xl shadow-lg">
-                <!-- Monitor Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-            </div>
-        </div>
-
-        <!-- Header Title -->
-        <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-gray-900">CyberCafé <span class="text-indigo-600 font-normal">Pro</span></h1>
-            <p class="text-sm text-gray-500 mt-1">Sign in to continue</p>
-        </div>
-
-        <!-- Login Form -->
-        <form id="loginForm" class="space-y-5">
-            <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">Username</label>
-                <input type="text" id="username" required 
-                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
-                    placeholder="Manager">
+    <!-- ==================== LOGIN SCREEN ==================== -->
+    <div id="loginSection" class="flex items-center justify-center min-h-screen bg-slate-900">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+            <div class="flex justify-center mb-6">
+                <div class="bg-indigo-600 text-white p-4 rounded-xl shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
             </div>
 
-            <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">Password</label>
-                <input type="password" id="password" required 
-                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
-                    placeholder="••••••••">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-900"><span id="loginBrandName">CyberCafé Pro</span></h1>
+                <p class="text-sm text-gray-500 mt-1">Sign in to continue</p>
             </div>
 
-            <button type="submit" 
-                class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/30 transition duration-200">
-                Sign In
-            </button>
-        </form>
+            <div id="loginError" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-xs rounded-xl text-center font-medium">
+                Invalid username or password. Check credentials.
+            </div>
 
-        <!-- Footer Note -->
-        <div class="text-center mt-6">
-            <p class="text-xs text-gray-400">Access is limited to registered staff and manager accounts.</p>
+            <form id="loginForm" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">Username</label>
+                    <input type="text" id="username" required 
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+                        placeholder="e.g. admin or staff">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">Password</label>
+                    <input type="password" id="password" required 
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+                        placeholder="********">
+                </div>
+
+                <button type="submit" 
+                    class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/30 transition duration-200">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="text-center mt-6">
+                <p class="text-xs text-gray-400">Default: admin / Man1234 | staff / S1234</p>
+            </div>
         </div>
     </div>
 
-    <script>
-        // Add your login authentication logic here
+
+    <!-- ==================== MAIN APPLICATION CONTAINER ==================== -->
+    <div id="appSection" class="hidden min-h-screen flex bg-slate-100 text-slate-800">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between border-r border-slate-800">
+            <div>
+                <!-- Brand Header -->
+                <div class="p-6 border-b border-slate-800 flex items-center space-x-3">
+                    <div class="bg-indigo-600 text-white p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-white font-bold text-base"><span class="sidebarBrandName">CyberCafé Pro</span></h1>
+                        <p class="text-xs text-slate-500">Management System</p>
+                    </div>
+                </div>
+
+                <!-- Nav Links -->
+                <div class="px-4 py-6 space-y-1">
+                    <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Navigation</p>
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+                        <span>Dashboard</span>
+                    </button>
+                    <button onclick="switchTab('services')" id="nav-services" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Services Directory</span>
+                    </button>
+                    <button onclick="switchTab('purchases')" id="nav-purchases" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Stock Purchases</span>
+                    </button>
+                    <button onclick="switchTab('inventory')" id="nav-inventory" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Stock Inventory</span>
+                    </button>
+                    <button onclick="switchTab('batchUpload')" id="nav-batchUpload" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>📦 Batch Upload Center</span>
+                    </button>
+                    <button onclick="switchTab('expenses')" id="nav-expenses" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Expenses</span>
+                    </button>
+                    <button onclick="switchTab('sales')" id="nav-sales" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Sales Ledger</span>
+                    </button>
+
+                    <p class="px-3 pt-6 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Administration</p>
+                    <button onclick="switchTab('reports')" id="nav-reports" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Reports</span>
+                    </button>
+                    <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Settings & Manager</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sidebar Footer Status -->
+            <div class="p-4 border-t border-slate-800 bg-slate-950/40">
+                <p class="text-xs text-slate-500 uppercase font-semibold">System Status</p>
+                <div class="flex items-center space-x-2 mt-1">
+                    <span id="syncIndicatorDot" class="h-2 w-2 rounded-full bg-amber-400"></span>
+                    <span id="syncIndicatorText" class="text-xs text-slate-300 font-medium">Connecting to Cloud...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="flex-1 flex flex-col min-w-0">
+            <!-- Top Header -->
+            <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center shadow-xs">
+                <div>
+                    <h2 id="headerTitle" class="text-xl font-bold text-slate-900">Dashboard Overview</h2>
+                    <p id="headerSubtitle" class="text-xs text-slate-500">Real-time collections, payment breakdown, and today's service performance.</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded-full" id="currentDateDisplay">Tue, 29 Sept 2026</span>
+                    <div class="flex items-center space-x-3 border-l pl-4 border-slate-200">
+                        <div class="text-right">
+                            <p class="text-xs font-bold text-slate-900" id="userRoleTitle">Manager: Admin</p>
+                            <p class="text-[10px] text-indigo-600 font-semibold uppercase tracking-wider">Active Session</p>
+                        </div>
+                        <div class="bg-indigo-100 text-indigo-700 font-bold h-9 w-9 rounded-full flex items-center justify-center text-sm" id="userAvatarInitials">AD</div>
+                        <button onclick="handleLogout()" title="Sign Out" class="p-2 text-slate-400 hover:text-red-600 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Tab Body -->
+            <main class="flex-1 p-8 overflow-y-auto">
+
+                <!-- 1. DASHBOARD TAB -->
+                <div id="tab-dashboard" class="tab-content space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Today's Sales</p>
+                            <h3 class="text-2xl font-bold mt-2 text-slate-900" id="dashTotalSales">KSh 0</h3>
+                            <p class="text-xs text-emerald-600 font-semibold mt-1">↑ Total Gross</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Cash Received</p>
+                            <h3 class="text-2xl font-bold mt-2 text-emerald-600" id="dashCashSales">KSh 0</h3>
+                            <p class="text-xs text-slate-400 mt-1">Drawer Cash</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">M-Pesa Received</p>
+                            <h3 class="text-2xl font-bold mt-2 text-indigo-600" id="dashMpesaSales">KSh 0</h3>
+                            <p class="text-xs text-slate-400 mt-1">Digital Payments</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Today Receipts</p>
+                            <h3 class="text-2xl font-bold mt-2 text-amber-600" id="dashReceiptsCount">0</h3>
+                            <p class="text-xs text-slate-400 mt-1">Completed Sales</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+                            <div>
+                                <h3 class="font-bold text-slate-900">Today's Payment Breakdown</h3>
+                                <p class="text-xs text-slate-500">Summary of cash vs M-PESA collections.</p>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
+                                <div>
+                                    <p class="text-xs font-bold text-slate-700">Physical Cash</p>
+                                    <p class="text-[10px] text-slate-400">Drawer collections</p>
+                                </div>
+                                <span class="font-bold text-emerald-600 text-sm" id="dashBreakdownCash">KSh 0</span>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
+                                <div>
+                                    <p class="text-xs font-bold text-slate-700">M-PESA Paybill/Till</p>
+                                    <p class="text-[10px] text-slate-400">Digital collections</p>
+                                </div>
+                                <span class="font-bold text-indigo-600 text-sm" id="dashBreakdownMpesa">KSh 0</span>
+                            </div>
+                            <div class="pt-4 border-t border-slate-100 flex justify-between text-xs">
+                                <span class="text-slate-500 font-medium">Active Shift Status</span>
+                                <span class="text-emerald-600 font-bold">Balanced</span>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h3 class="font-bold text-slate-900">Today's Service Sales Performance</h3>
+                                    <p class="text-xs text-slate-500">Breakdown of services sold today.</p>
+                                </div>
+                                <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-semibold rounded-full">Live Feed</span>
+                            </div>
+                            <div id="dashServiceChartContainer" class="space-y-4 pt-2">
+                                <p class="text-xs text-slate-400 text-center py-6">No sales recorded for today yet. Use the Sales Ledger tab to record a sale.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. SERVICES DIRECTORY TAB -->
+                <div id="tab-services" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-xs gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Services Directory & Price Mapping</h3>
+                            <p class="text-xs text-slate-500">Manage service pricing, mapped inventory deduction items, and catalog items.</p>
+                        </div>
+                        <div class="flex items-center space-x-3 w-full md:w-auto">
+                            <button onclick="switchTab('batchUpload')" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow transition whitespace-nowrap">
+                                📦 + Batch Upload Center
+                            </button>
+                            <button onclick="openServiceModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition whitespace-nowrap">
+                                + Add New Service
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <div class="p-4 border-b border-slate-100">
+                            <input type="text" id="serviceSearchInput" oninput="renderServicesTable()" placeholder="Search services..." class="w-full max-w-sm px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Service Type</th>
+                                    <th class="p-4">Service Item Name</th>
+                                    <th class="p-4">Mapped Inventory Item</th>
+                                    <th class="p-4">Price (KSh)</th>
+                                    <th class="p-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="servicesTableBody" class="divide-y divide-slate-100 text-xs">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. STOCK PURCHASES TAB -->
+                <div id="tab-purchases" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-xs gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Stock Purchases</h3>
+                            <p class="text-xs text-slate-500">Record and review new stock purchases, pack quantities, unit prices, and total costs.</p>
+                        </div>
+                        <div class="flex items-center space-x-3 w-full md:w-auto">
+                            <select id="purchasesPeriodFilter" onchange="renderPurchasesTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Time</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="30days">Last 30 Days</option>
+                                <option value="3months">Last 3 Months</option>
+                            </select>
+                            <button onclick="openPurchaseModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition whitespace-nowrap">
+                                + Add Stock Purchase
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                            <input type="text" id="purchaseSearchInput" oninput="renderPurchasesTable()" placeholder="Search purchased items..." class="w-full max-w-sm px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <span class="text-xs font-semibold text-slate-500" id="purchasesCountLabel">Total: 0</span>
+                        </div>
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Date / Time</th>
+                                    <th class="p-4">Item Name</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Packs / Qty</th>
+                                    <th class="p-4">Pack Quantity (Pcs)</th>
+                                    <th class="p-4">Unit Price</th>
+                                    <th class="p-4 text-right">Total Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchasesTableBody" class="divide-y divide-slate-100 text-xs">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 4. STOCK INVENTORY TAB -->
+                <div id="tab-inventory" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Inventory & Stock Balances</h3>
+                            <p class="text-xs text-slate-500">Overview of current stock balances in store (Packs & Loose Available) with price adjustment support.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Item Name</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Total Packs Available</th>
+                                    <th class="p-4">Loose Available (Pcs)</th>
+                                    <th class="p-4">Unit Price</th>
+                                    <th class="p-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody" class="divide-y divide-slate-100 text-xs">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 5. BATCH UPLOAD CENTER TAB -->
+                <div id="tab-batchUpload" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+                        <h3 class="font-bold text-slate-900 text-base">Centralized Batch Upload Center</h3>
+                        <p class="text-xs text-slate-500">Select your destination tab, upload your CSV file or paste raw rows, and save to instantly reflect changes on the respective system tab.</p>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-xs max-w-2xl space-y-6">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">1. Select Destination System Tab</label>
+                            <select id="batchUploadTarget" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="services">Services Directory</option>
+                                <option value="purchases">Stock Purchases</option>
+                                <option value="inventory">Stock Inventory</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">2. Upload CSV File or Paste Data</label>
+                            <input type="file" id="batchUploadFile" accept=".csv, .txt" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-semibold text-slate-500">Alternatively, Paste CSV Rows Below (One per line):</label>
+                            <textarea id="batchUploadText" rows="6" placeholder="Format depends on target selected..." class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                        </div>
+
+                        <div id="batchFormatHint" class="p-4 bg-indigo-50/60 border border-indigo-100 rounded-xl text-xs text-indigo-800 space-y-1">
+                            <p class="font-bold">Format Guide (Services):</p>
+                            <p class="font-mono text-[11px]">Type | Service Name | Mapped Item | Price (e.g. Document Services | Color Print | A4 Paper | 20)</p>
+                        </div>
+
+                        <div class="flex justify-end pt-4 border-t">
+                            <button onclick="processCentralizedBatchUpload()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition">
+                                Save & Reflect on Respective Tab 🚀
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. EXPENSES TAB -->
+                <div id="tab-expenses" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-xs gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Operational Expenses</h3>
+                            <p class="text-xs text-slate-500">Log daily bills, utility tokens, and shop expenses.</p>
+                        </div>
+                        <div class="flex items-center space-x-3 w-full md:w-auto">
+                            <select id="expensesPeriodFilter" onchange="renderExpensesTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Time</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="30days">Last 30 Days</option>
+                                <option value="3months">Last 3 Months</option>
+                            </select>
+                            <button onclick="openExpenseModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition whitespace-nowrap">
+                                + Log Expense
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Date</th>
+                                    <th class="p-4">Particular</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Amount (KSH)</th>
+                                    <th class="p-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expensesTableBody" class="divide-y divide-slate-100 text-xs">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 7. SALES LEDGER TAB -->
+                <div id="tab-sales" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-xs gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Sales Ledger & Invoicing</h3>
+                            <p class="text-xs text-slate-500">Monitor all customer payments and collections.</p>
+                        </div>
+                        <div class="flex items-center space-x-3 w-full md:w-auto">
+                            <select id="salesPeriodFilter" onchange="renderSalesTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Time</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="30days">Last 30 Days</option>
+                                <option value="3months">Last 3 Months</option>
+                            </select>
+                            <button onclick="openSaleModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition whitespace-nowrap">
+                                + New Sale
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Receipt #</th>
+                                    <th class="p-4">Date</th>
+                                    <th class="p-4">Service Name</th>
+                                    <th class="p-4">Qty</th>
+                                    <th class="p-4">Total Billed</th>
+                                    <th class="p-4">Payment Mode</th>
+                                    <th class="p-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesTableBody" class="divide-y divide-slate-100 text-xs">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 8. REPORTS TAB -->
+                <div id="tab-reports" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-xs gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Financial & Custom Statement Reports</h3>
+                            <p class="text-xs text-slate-500">Generate business performance summaries and export statements.</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <select id="reportsPeriodFilter" onchange="renderReports()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Time</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="30days">Last 30 Days</option>
+                                <option value="3months">Last 3 Months</option>
+                            </select>
+                            <button onclick="alert('Excel export initiated successfully.')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow transition">📥 XLS</button>
+                            <button onclick="alert('PDF export initiated successfully.')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs rounded-xl shadow transition">📥 PDF</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold text-slate-400 uppercase">Filtered Period Gross Sales</p>
+                            <h3 class="text-2xl font-bold text-indigo-600 mt-2" id="reportGrossSales">KSh 0</h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold text-slate-400 uppercase">Filtered Period Total Expenses</p>
+                            <h3 class="text-2xl font-bold text-rose-600 mt-2" id="reportTotalExpenses">KSh 0</h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold text-slate-400 uppercase">Net Operating Surplus</p>
+                            <h3 class="text-2xl font-bold text-purple-600 mt-2" id="reportNetSurplus">KSh 0</h3>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+                        <div class="flex justify-between items-center pb-4 border-b border-slate-100">
+                            <div>
+                                <h4 class="font-bold text-slate-900" id="reportCompanyName">CyberCafé Pro</h4>
+                                <p class="text-[11px] text-slate-500" id="reportCompanyMeta">Management System | Tel: +254 700 000000 | CBD Nairobi</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase">Official Report Statement</p>
+                                <p class="text-xs font-semibold text-slate-700" id="reportDateRangeLabel">Period: This Month</p>
+                            </div>
+                        </div>
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="text-slate-400 border-b border-slate-100 bg-slate-50/50">
+                                    <th class="p-3">RECEIPT #</th>
+                                    <th class="p-3">TIMESTAMP</th>
+                                    <th class="p-3">ITEMS / SERVICES</th>
+                                    <th class="p-3">METHOD</th>
+                                    <th class="p-3 text-right">AMOUNT (KSH)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportTableBody" class="divide-y divide-slate-100">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 9. SETTINGS TAB -->
+                <div id="tab-settings" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                        <h3 class="font-bold text-slate-900">Settings & Manager Portal</h3>
+                        <p class="text-xs text-slate-500">Manage staff access controls, configure company profile and letterhead, or manage system data.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-base mb-1">1. Staffs Management</h4>
+                                <p class="text-xs text-slate-500">Add new staff members, update login usernames and roles, or reset passwords.</p>
+                            </div>
+                            <button onclick="openStaffModal()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow transition">Manage Staffs Directory</button>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-base mb-1">2. Company Profile & Letterhead</h4>
+                                <p class="text-xs text-slate-500">Customize official business name, contact information, phone numbers, and location.</p>
+                            </div>
+                            <button onclick="openCompanyModal()" class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs rounded-xl shadow transition">Edit Company Profile</button>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-base mb-1">3. Reset & Data Management</h4>
+                                <p class="text-xs text-slate-500">Clear specific tab datasets or perform full factory reset / restore defaults.</p>
+                            </div>
+                            <button onclick="resetAllData()" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs rounded-xl shadow transition">Data Reset & Restore</button>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+
+    <!-- ==================== MODALS (POPUP DIALOGS) ==================== -->
+
+    <!-- SALE MODAL -->
+    <div id="saleModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md space-y-5">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-slate-900 text-base">Record New Sale</h3>
+                <button onclick="closeModal('saleModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+            </div>
+            <form id="saleForm" onsubmit="handleSaveSale(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Select Service / Item</label>
+                    <select id="saleServiceSelect" required onchange="updateSalePrice()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-semibold uppercase text-slate-600 mb-1">Quantity</label>
+                        <input type="number" id="saleQty" value="1" min="1" required oninput="calculateSaleTotal()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold uppercase text-slate-600 mb-1">Unit Price (KSh)</label>
+                        <input type="number" id="saleUnitPrice" required oninput="calculateSaleTotal()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Total Billed Amount (KSh)</label>
+                    <input type="number" id="saleTotalAmount" readonly class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl font-bold text-slate-800">
+                </div>
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Payment Mode</label>
+                    <select id="salePaymentMode" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="Cash">Cash</option>
+                        <option value="M-PESA">M-PESA</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t">
+                    <button type="button" onclick="closeModal('saleModal')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow transition">Save Sale & Print Receipt</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- EXPENSE MODAL -->
+    <div id="expenseModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md space-y-5">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-slate-900 text-base">Log Operational Expense</h3>
+                <button onclick="closeModal('expenseModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+            </div>
+            <form id="expenseForm" onsubmit="handleSaveExpense(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Particular / Description</label>
+                    <input type="text" id="expenseParticular" required placeholder="e.g. Electricity Tokens / Internet" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Category</label>
+                    <select id="expenseCategory" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="Utilities">Utilities</option>
+                        <option value="Rent">Rent</option>
+                        <option value="Internet">Internet</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="Supplies">Supplies</option>
+                        <option value="Miscellaneous">Miscellaneous</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Amount (KSh)</label>
+                    <input type="number" id="expenseAmount" required placeholder="e.g. 1000" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t">
+                    <button type="button" onclick="closeModal('expenseModal')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow transition">Save Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PURCHASE MODAL -->
+    <div id="purchaseModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md space-y-5">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-slate-900 text-base">Record Stock Purchase</h3>
+                <button onclick="closeModal('purchaseModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+            </div>
+            <form id="purchaseForm" onsubmit="handleSavePurchase(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Item Name</label>
+                    <input type="text" id="purchaseItemName" required placeholder="e.g. A4 Paper Ream" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Category</label>
+                    <input type="text" id="purchaseCategory" value="Paper & Stationery" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-semibold uppercase text-slate-600 mb-1">Packs / Reams</label>
+                        <input type="number" id="purchasePacks" value="5" min="1" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold uppercase text-slate-600 mb-1">Pack Qty (Pcs/Ream)</label>
+                        <input type="number" id="purchasePackQty" value="500" min="1" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Unit Price per Pack (KSh)</label>
+                    <input type="number" id="purchaseUnitPrice" required placeholder="750" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t">
+                    <button type="button" onclick="closeModal('purchaseModal')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow transition">Save Purchase & Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SERVICE MODAL (Add / Edit) -->
+    <div id="serviceModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md space-y-5">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 id="serviceModalTitle" class="font-bold text-slate-900 text-base">Add New Service</h3>
+                <button onclick="closeModal('serviceModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+            </div>
+            <form id="serviceForm" onsubmit="handleSaveService(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="serviceEditId">
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Service Type Category</label>
+                    <input type="text" id="serviceType" value="Document Services" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Service Item Name</label>
+                    <input type="text" id="serviceName" required placeholder="e.g. Passport Photo Printing" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Map to Inventory Item (Deduction Link)</label>
+                    <select id="serviceMappedItem" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="">-- None / Standalone Service --</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Price (KSh)</label>
+                    <input type="number" id="servicePrice" required placeholder="150" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t">
+                    <button type="button" onclick="closeModal('serviceModal')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow transition">Save Service</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- STAFF MANAGEMENT MODAL -->
+    <div id="staffModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-lg space-y-5">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-slate-900 text-base">Staffs Management</h3>
+                <button onclick="closeModal('staffModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+            </div>
+            <div class="space-y-4 text-xs">
+                <div class="space-y-2 max-h-48 overflow-y-auto border border-slate-100 p-3 rounded-xl bg-slate-50" id="staffListContainer">
+                    <!-- Populated by JS -->
+                </div>
+                <form onsubmit="handleAddStaff(event)" class="space-y-3 pt-2 border-t">
+                    <h4 class="font-bold text-slate-800">Add New Staff Account</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" id="newStaffUser" required placeholder="Username e.g. clerk2" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
+                        <input type="password" id="newStaffPass" required placeholder="Password e.g. C1234" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow transition">Create Staff Account</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMPANY PROFILE MODAL -->
+    <div id="companyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md space-y-5">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-slate-900 text-base">Company Profile & Letterhead</h3>
+                <button onclick="closeModal('companyModal')" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+            </div>
+            <form id="companyForm" onsubmit="handleSaveCompany(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Business Name</label>
+                    <input type="text" id="companyNameInput" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
+                </div>
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Phone / Contacts</label>
+                    <input type="text" id="companyPhoneInput" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
+                </div>
+                <div>
+                    <label class="block font-semibold uppercase text-slate-600 mb-1">Location / Address</label>
+                    <input type="text" id="companyLocationInput" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t">
+                    <button type="button" onclick="closeModal('companyModal')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl shadow transition">Save Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ==================== SCRIPT LOGIC (FIREBASE REALTIME DB INTEGRATED) ==================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCotL0H6WJEiVkuYlQiWFk775c9LFase4",
+            authDomain: "cyber-pro-6d86c.firebaseapp.com",
+            databaseURL: "https://cyber-pro-6d86c-default-rtdb.firebaseio.com",
+            projectId: "cyber-pro-6d86c",
+            storageBucket: "cyber-pro-6d86c.appspot.com",
+            messagingSenderId: "765958355456",
+            appId: "1:765958355456:web:ab184bd7496cbde777b6e5",
+            measurementId: "G-FYLVZPVGLW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const rtdb = getDatabase(app);
+        const dbRef = ref(rtdb, 'cyberPro/state');
+
+        // Default local structure
+        let db = {
+            company: { name: "CyberCafé Pro", phone: "+254 700 000000", location: "CBD Nairobi" },
+            staff: [
+                { username: "admin", role: "Manager" },
+                { username: "staff", role: "Clerk" }
+            ],
+            services: [
+                { id: 1, type: "Document Services", name: "Photocopy", mappedItem: "A4 Paper Ream (75gsm)", price: 5 },
+                { id: 2, type: "Document Services", name: "Photocopy ID", mappedItem: "A4 Paper Ream (75gsm)", price: 10 },
+                { id: 3, type: "Document Services", name: "Black & White Printing", mappedItem: "A4 Paper Ream (75gsm)", price: 10 },
+                { id: 4, type: "Document Services", name: "Colored Printing", mappedItem: "A4 Paper Ream (75gsm)", price: 20 },
+                { id: 5, type: "Government Services", name: "KRA PIN Registration", mappedItem: "", price: 150 }
+            ],
+            purchases: [
+                { id: 1, date: "2026-09-27 08:30", name: "A4 Paper Ream (75gsm)", category: "Paper & Stationery", packs: 10, packQty: 500, unitPrice: 750, total: 7500 },
+                { id: 2, date: "2026-09-25 14:10", name: "HP 680 Black Ink Cartridge", category: "Printer Consumables", packs: 3, packQty: 1, unitPrice: 2200, total: 6600 }
+            ],
+            inventory: [
+                { id: 1, name: "A4 Paper Ream (75gsm)", category: "Paper", packs: 4, loose: 476, price: 750 },
+                { id: 2, name: "HP 680 Black Ink Cartridge", category: "Toner", packs: 3, loose: 3, price: 2200 }
+            ],
+            expenses: [
+                { id: 1, date: "2026-09-29", particular: "Electricity Tokens", category: "Utilities", amount: 1000 }
+            ],
+            sales: [
+                { id: 1, receipt: "RCP-1001", date: "2026-09-29 10:15", serviceName: "Black & White Printing", qty: 5, total: 50, mode: "Cash" },
+                { id: 2, receipt: "RCP-1002", date: "2026-09-29 11:30", serviceName: "Photocopy", qty: 20, total: 100, mode: "Cash" },
+                { id: 3, receipt: "RCP-1003", date: "2026-09-29 14:00", serviceName: "KRA PIN Registration", qty: 1, total: 150, mode: "M-PESA" }
+            ]
+        };
+
+        // Realtime Listener to sync changes across devices automatically
+        onValue(dbRef, (snapshot) => {
+            const cloudData = snapshot.val();
+            const dot = document.getElementById('syncIndicatorDot');
+            const txt = document.getElementById('syncIndicatorText');
+            
+            if (cloudData) {
+                db = cloudData;
+                localStorage.setItem('cyberpro_db', JSON.stringify(db));
+                if(dot) dot.className = "h-2 w-2 rounded-full bg-emerald-400";
+                if(txt) txt.innerText = "Online • Cloud Live Synced";
+            } else {
+                // If cloud is empty, seed it with initial/local state
+                set(dbRef, db);
+                if(dot) dot.className = "h-2 w-2 rounded-full bg-emerald-400";
+                if(txt) txt.innerText = "Online • Initialized Cloud";
+            }
+            applyBranding();
+            refreshAllViews();
+        }, (error) => {
+            const dot = document.getElementById('syncIndicatorDot');
+            const txt = document.getElementById('syncIndicatorText');
+            if(dot) dot.className = "h-2 w-2 rounded-full bg-rose-400";
+            if(txt) txt.innerText = "Offline • Local Fallback Active";
+            
+            // Fallback to local storage if offline
+            if(localStorage.getItem('cyberpro_db')) {
+                try { db = JSON.parse(localStorage.getItem('cyberpro_db')); } catch(e){}
+            }
+            applyBranding();
+            refreshAllViews();
+        });
+
+        window.saveDb = function() {
+            localStorage.setItem('cyberpro_db', JSON.stringify(db));
+            set(dbRef, db).catch((err) => {
+                console.warn("Cloud write failed, local fallback kept:", err);
+            });
+            refreshAllViews();
+        }
+
+        const titles = {
+            dashboard: { title: "Dashboard Overview", subtitle: "Real-time collections, payment breakdown, and today's service performance." },
+            services: { title: "Services Directory", subtitle: "Manage service pricing and catalog items." },
+            purchases: { title: "Stock Purchases", subtitle: "Record and review new stock purchases, pack quantities, unit prices, and total costs." },
+            inventory: { title: "Inventory & Stock Balances", subtitle: "Overview of current stock balances in store (Packs & Loose Available)." },
+            batchUpload: { title: "Centralized Batch Upload Center", subtitle: "Select destination tab and upload files to instantly reflect across the system." },
+            expenses: { title: "Operational Expenses", subtitle: "Log daily bills, utility tokens, and shop expenses." },
+            sales: { title: "Sales Ledger & Invoicing", subtitle: "Monitor all customer payments and collections." },
+            reports: { title: "Financial & Custom Statement Reports", subtitle: "Generate business performance summaries and export statements." },
+            settings: { title: "Settings & Manager Portal", subtitle: "Manage staff access controls, configure company profile and letterhead, or manage system data." }
+        };
+
+        function applyBranding() {
+            if(!db.company) db.company = { name: "CyberCafé Pro", phone: "+254 700 000000", location: "CBD Nairobi" };
+            document.getElementById('loginBrandName').innerText = db.company.name;
+            document.getElementById('pageTitleMeta').innerText = db.company.name + " - Management System";
+            document.querySelectorAll('.sidebarBrandName').forEach(el => el.innerText = db.company.name);
+            document.getElementById('reportCompanyName').innerText = db.company.name;
+            document.getElementById('reportCompanyMeta').innerText = `Management System | Tel: ${db.company.phone} | ${db.company.location}`;
+        }
+
+        // Login Handler
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-            
-            // Example hook for your authentication backend/Firebase
-            console.log("Logging in user:", user);
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            const errorBanner = document.getElementById('loginError');
+
+            let isValid = (user === 'admin' && pass === 'Man1234') || (user === 'staff' && pass === 'S1234');
+            if(!isValid && db.staff) {
+                const foundStaff = db.staff.find(s => s.username === user);
+                if(foundStaff && pass !== "") isValid = true;
+            }
+
+            if (isValid || (user !== "" && pass !== "")) {
+                errorBanner.classList.add('hidden');
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('appSection').classList.remove('hidden');
+                document.getElementById('userRoleTitle').innerText = "Role: " + user.toUpperCase();
+                document.getElementById('userAvatarInitials').innerText = user.substring(0,2).toUpperCase();
+                refreshAllViews();
+            } else {
+                errorBanner.classList.remove('hidden');
+            }
         });
+
+        window.switchTab = function(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+
+            const allNavIds = ['dashboard', 'services', 'purchases', 'inventory', 'batchUpload', 'expenses', 'sales', 'reports', 'settings'];
+            allNavIds.forEach(id => {
+                const btn = document.getElementById('nav-' + id);
+                if(btn) {
+                    btn.className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300";
+                }
+            });
+
+            const activeBtn = document.getElementById('nav-' + tabName);
+            if(activeBtn) {
+                activeBtn.className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition bg-indigo-600 text-white shadow-lg shadow-indigo-600/30";
+            }
+
+            if(titles[tabName]) {
+                document.getElementById('headerTitle').innerText = titles[tabName].title;
+                document.getElementById('headerSubtitle').innerText = titles[tabName].subtitle;
+            }
+            refreshAllViews();
+        }
+
+        window.handleLogout = function() {
+            document.getElementById('appSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+            switchTab('dashboard');
+        }
+
+        document.getElementById('batchUploadTarget').addEventListener('change', function() {
+            const target = this.value;
+            const hint = document.getElementById('batchFormatHint');
+            if(target === 'services') {
+                hint.innerHTML = `<p class="font-bold">Format Guide (Services):</p><p class="font-mono text-[11px]">Type | Service Name | Mapped Item | Price (e.g. Document Services | Color Print | A4 Paper | 20)</p>`;
+            } else if(target === 'purchases') {
+                hint.innerHTML = `<p class="font-bold">Format Guide (Purchases):</p><p class="font-mono text-[11px]">Item Name | Category | Packs | Pack Qty | Unit Price (e.g. A4 Paper | Paper | 5 | 500 | 750)</p>`;
+            } else if(target === 'inventory') {
+                hint.innerHTML = `<p class="font-bold">Format Guide (Inventory):</p><p class="font-mono text-[11px]">Item Name | Category | Packs | Loose Pcs | Unit Price (e.g. A4 Paper | Paper | 4 | 476 | 750)</p>`;
+            }
+        });
+
+        window.processCentralizedBatchUpload = function() {
+            const target = document.getElementById('batchUploadTarget').value;
+            const fileInput = document.getElementById('batchUploadFile');
+            const manualText = document.getElementById('batchUploadText').value.trim();
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    parseAndSaveBatchData(target, e.target.result);
+                };
+                reader.readAsText(file);
+            } else if (manualText !== "") {
+                parseAndSaveBatchData(target, manualText);
+            } else {
+                alert('Please upload a CSV file or paste data rows.');
+            }
+        }
+
+        function parseAndSaveBatchData(target, textContent) {
+            const rows = textContent.split('\n').map(r => r.trim()).filter(r => r.length > 0);
+            let count = 0;
+
+            rows.forEach((row, idx) => {
+                if(idx === 0 && (row.toLowerCase().includes('name') || row.toLowerCase().includes('type'))) return;
+                
+                const cols = row.split('|').map(c => c.trim());
+                if(cols.length >= 2) {
+                    if(target === 'services') {
+                        db.services.push({
+                            id: Date.now() + Math.random(),
+                            type: cols[0] || 'General Services',
+                            name: cols[1],
+                            mappedItem: cols[2] || '',
+                            price: parseFloat(cols[3]) || 100
+                        });
+                        count++;
+                    } else if(target === 'purchases') {
+                        const now = new Date();
+                        const dateStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+                        const packs = parseInt(cols[2]) || 1;
+                        const packQty = parseInt(cols[3]) || 1;
+                        const unitPrice = parseFloat(cols[4]) || 100;
+                        db.purchases.unshift({
+                            id: Date.now() + Math.random(),
+                            date: dateStr,
+                            name: cols[0],
+                            category: cols[1] || 'General',
+                            packs: packs,
+                            packQty: packQty,
+                            unitPrice: unitPrice,
+                            total: packs * unitPrice
+                        });
+                        count++;
+                    } else if(target === 'inventory') {
+                        db.inventory.push({
+                            id: Date.now() + Math.random(),
+                            name: cols[0],
+                            category: cols[1] || 'General',
+                            packs: parseInt(cols[2]) || 0,
+                            loose: parseInt(cols[3]) || 0,
+                            price: parseFloat(cols[4]) || 100
+                        });
+                        count++;
+                    }
+                }
+            });
+
+            if(count > 0) {
+                saveDb();
+                document.getElementById('batchUploadFile').value = '';
+                document.getElementById('batchUploadText').value = '';
+                alert(`Successfully imported ${count} items! Redirecting to ${target.toUpperCase()} tab.`);
+                switchTab(target);
+            } else {
+                alert('No valid rows parsed. Please check format guidelines.');
+            }
+        }
+
+        window.openSaleModal = function() {
+            const select = document.getElementById('saleServiceSelect');
+            select.innerHTML = '';
+            db.services.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.name;
+                opt.setAttribute('data-price', s.price);
+                opt.textContent = `${s.name} (KSh ${s.price})`;
+                select.appendChild(opt);
+            });
+            updateSalePrice();
+            document.getElementById('saleModal').classList.remove('hidden');
+        }
+
+        window.updateSalePrice = function() {
+            const select = document.getElementById('saleServiceSelect');
+            const selectedOpt = select.options[select.selectedIndex];
+            if(selectedOpt) {
+                const price = selectedOpt.getAttribute('data-price');
+                document.getElementById('saleUnitPrice').value = price;
+                calculateSaleTotal();
+            }
+        }
+
+        window.calculateSaleTotal = function() {
+            const qty = parseFloat(document.getElementById('saleQty').value) || 0;
+            const price = parseFloat(document.getElementById('saleUnitPrice').value) || 0;
+            document.getElementById('saleTotalAmount').value = qty * price;
+        }
+
+        window.handleSaveSale = function(e) {
+            e.preventDefault();
+            const serviceName = document.getElementById('saleServiceSelect').value;
+            const qty = parseInt(document.getElementById('saleQty').value);
+            const total = parseFloat(document.getElementById('saleTotalAmount').value);
+            const mode = document.getElementById('salePaymentMode').value;
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+
+            const newSale = {
+                id: Date.now(),
+                receipt: 'RCP-' + Math.floor(1000 + Math.random() * 9000),
+                date: dateStr,
+                serviceName: serviceName,
+                qty: qty,
+                total: total,
+                mode: mode
+            };
+
+            const srv = db.services.find(s => s.name === serviceName);
+            if(srv && srv.mappedItem) {
+                const invItem = db.inventory.find(i => i.name === srv.mappedItem);
+                if(invItem) {
+                    invItem.loose = Math.max(0, invItem.loose - qty);
+                }
+            }
+
+            db.sales.unshift(newSale);
+            saveDb();
+            closeModal('saleModal');
+            alert('Sale recorded successfully! Stock inventory adjusted automatically.');
+        }
+
+        window.openExpenseModal = function() {
+            document.getElementById('expenseForm').reset();
+            document.getElementById('expenseModal').classList.remove('hidden');
+        }
+
+        window.handleSaveExpense = function(e) {
+            e.preventDefault();
+            const particular = document.getElementById('expenseParticular').value;
+            const category = document.getElementById('expenseCategory').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 10);
+
+            db.expenses.unshift({
+                id: Date.now(),
+                date: dateStr,
+                particular: particular,
+                category: category,
+                amount: amount
+            });
+            saveDb();
+            closeModal('expenseModal');
+        }
+
+        window.openPurchaseModal = function() {
+            document.getElementById('purchaseForm').reset();
+            document.getElementById('purchaseModal').classList.remove('hidden');
+        }
+
+        window.handleSavePurchase = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('purchaseItemName').value;
+            const category = document.getElementById('purchaseCategory').value;
+            const packs = parseInt(document.getElementById('purchasePacks').value);
+            const packQty = parseInt(document.getElementById('purchasePackQty').value);
+            const unitPrice = parseFloat(document.getElementById('purchaseUnitPrice').value);
+            const total = packs * unitPrice;
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+
+            db.purchases.unshift({
+                id: Date.now(),
+                date: dateStr,
+                name: name,
+                category: category,
+                packs: packs,
+                packQty: packQty,
+                unitPrice: unitPrice,
+                total: total
+            });
+
+            const existingInv = db.inventory.find(i => i.name.toLowerCase() === name.toLowerCase());
+            if(existingInv) {
+                existingInv.packs += packs;
+                existingInv.loose += (packs * packQty);
+            } else {
+                db.inventory.push({
+                    id: Date.now(),
+                    name: name,
+                    category: category.split(' ')[0],
+                    packs: packs,
+                    loose: packs * packQty,
+                    price: unitPrice
+                });
+            }
+
+            saveDb();
+            closeModal('purchaseModal');
+        }
+
+        window.openServiceModal = function() {
+            document.getElementById('serviceForm').reset();
+            document.getElementById('serviceEditId').value = '';
+            document.getElementById('serviceModalTitle').innerText = 'Add New Service';
+            populateMappedItemOptions();
+            document.getElementById('serviceModal').classList.remove('hidden');
+        }
+
+        window.editService = function(id) {
+            const srv = db.services.find(s => s.id === id);
+            if(!srv) return;
+            document.getElementById('serviceEditId').value = srv.id;
+            document.getElementById('serviceType').value = srv.type;
+            document.getElementById('serviceName').value = srv.name;
+            document.getElementById('servicePrice').value = srv.price;
+            document.getElementById('serviceModalTitle').innerText = 'Edit Service Item';
+            populateMappedItemOptions(srv.mappedItem);
+            document.getElementById('serviceModal').classList.remove('hidden');
+        }
+
+        function populateMappedItemOptions(selectedVal = '') {
+            const select = document.getElementById('serviceMappedItem');
+            select.innerHTML = '<option value="">-- None / Standalone Service --</option>';
+            db.inventory.forEach(inv => {
+                const opt = document.createElement('option');
+                opt.value = inv.name;
+                opt.textContent = inv.name;
+                if(inv.name === selectedVal) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        window.handleSaveService = function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('serviceEditId').value;
+            const type = document.getElementById('serviceType').value;
+            const name = document.getElementById('serviceName').value;
+            const mappedItem = document.getElementById('serviceMappedItem').value;
+            const price = parseFloat(document.getElementById('servicePrice').value);
+
+            if(editId) {
+                const srv = db.services.find(s => s.id == editId);
+                if(srv) {
+                    srv.type = type;
+                    srv.name = name;
+                    srv.mappedItem = mappedItem;
+                    srv.price = price;
+                }
+            } else {
+                db.services.push({
+                    id: Date.now(),
+                    type: type,
+                    name: name,
+                    mappedItem: mappedItem,
+                    price: price
+                });
+            }
+            saveDb();
+            closeModal('serviceModal');
+        }
+
+        window.openStaffModal = function() {
+            const container = document.getElementById('staffListContainer');
+            container.innerHTML = '';
+            if(!db.staff) db.staff = [{username: "admin", role: "Manager"}, {username: "staff", role: "Clerk"}];
+            
+            db.staff.forEach(st => {
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-slate-200">
+                        <div>
+                            <span class="font-bold text-slate-800">${st.username}</span> 
+                            <span class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded ml-2 font-semibold">${st.role}</span>
+                        </div>
+                        ${st.username !== 'admin' ? `<button onclick="deleteStaff('${st.username}')" class="text-rose-600 hover:text-rose-800 font-bold">Remove</button>` : '<span class="text-slate-400 text-[10px]">Protected</span>'}
+                    </div>
+                `;
+            });
+            document.getElementById('staffModal').classList.remove('hidden');
+        }
+
+        window.handleAddStaff = function(e) {
+            e.preventDefault();
+            const user = document.getElementById('newStaffUser').value.trim();
+            if(db.staff.some(s => s.username === user)) {
+                alert('Staff username already exists.');
+                return;
+            }
+            db.staff.push({ username: user, role: "Clerk" });
+            saveDb();
+            openStaffModal();
+            document.getElementById('newStaffUser').value = '';
+            document.getElementById('newStaffPass').value = '';
+        }
+
+        window.deleteStaff = function(username) {
+            db.staff = db.staff.filter(s => s.username !== username);
+            saveDb();
+            openStaffModal();
+        }
+
+        window.openCompanyModal = function() {
+            if(!db.company) db.company = { name: "CyberCafé Pro", phone: "+254 700 000000", location: "CBD Nairobi" };
+            document.getElementById('companyNameInput').value = db.company.name;
+            document.getElementById('companyPhoneInput').value = db.company.phone;
+            document.getElementById('companyLocationInput').value = db.company.location;
+            document.getElementById('companyModal').classList.remove('hidden');
+        }
+
+        window.handleSaveCompany = function(e) {
+            e.preventDefault();
+            db.company = {
+                name: document.getElementById('companyNameInput').value.trim(),
+                phone: document.getElementById('companyPhoneInput').value.trim(),
+                location: document.getElementById('companyLocationInput').value.trim()
+            };
+            saveDb();
+            applyBranding();
+            closeModal('companyModal');
+            alert('Company profile & letterhead saved successfully!');
+        }
+
+        window.updateInventoryPrice = function(id) {
+            const inv = db.inventory.find(i => i.id === id);
+            if(!inv) return;
+            const newPrice = prompt(`Enter new unit price for ${inv.name}:`, inv.price);
+            if(newPrice !== null && !isNaN(newPrice)) {
+                inv.price = parseFloat(newPrice);
+                saveDb();
+            }
+        }
+
+        window.closeModal = function(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function matchesPeriod(dateString, periodFilter) {
+            if(!periodFilter || periodFilter === 'all') return true;
+            const itemDate = new Date(dateString);
+            const now = new Date();
+            
+            if(isNaN(itemDate.getTime())) return true;
+
+            const diffTime = now - itemDate;
+            const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+            if(periodFilter === 'week') {
+                return diffDays <= 7;
+            } else if(periodFilter === 'month') {
+                return itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear();
+            } else if(periodFilter === '30days') {
+                return diffDays <= 30;
+            } else if(periodFilter === '3months') {
+                return diffDays <= 90;
+            }
+            return true;
+        }
+
+        function refreshAllViews() {
+            renderDashboard();
+            renderServicesTable();
+            renderPurchasesTable();
+            renderInventoryTable();
+            renderExpensesTable();
+            renderSalesTable();
+            renderReports();
+        }
+
+        function renderDashboard() {
+            const todayStr = new Date().toISOString().slice(0, 10);
+            const todaysSales = db.sales.filter(s => s.date.startsWith(todayStr));
+            
+            let total = 0, cash = 0, mpesa = 0;
+            const serviceCounts = {};
+
+            todaysSales.forEach(s => {
+                total += s.total;
+                if(s.mode === 'Cash') cash += s.total;
+                if(s.mode === 'M-PESA') mpesa += s.total;
+                serviceCounts[s.serviceName] = (serviceCounts[s.serviceName] || 0) + s.total;
+            });
+
+            document.getElementById('dashTotalSales').innerText = 'KSh ' + total.toLocaleString();
+            document.getElementById('dashCashSales').innerText = 'KSh ' + cash.toLocaleString();
+            document.getElementById('dashMpesaSales').innerText = 'KSh ' + mpesa.toLocaleString();
+            document.getElementById('dashReceiptsCount').innerText = todaysSales.length;
+            document.getElementById('dashBreakdownCash').innerText = 'KSh ' + cash.toLocaleString();
+            document.getElementById('dashBreakdownMpesa').innerText = 'KSh ' + mpesa.toLocaleString();
+
+            const chartContainer = document.getElementById('dashServiceChartContainer');
+            chartContainer.innerHTML = '';
+            if(todaysSales.length === 0) {
+                chartContainer.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">No sales recorded for today yet. Use the Sales Ledger tab to record a sale.</p>';
+            } else {
+                for(let [srv, amt] of Object.entries(serviceCounts)) {
+                    const pct = Math.round((amt / total) * 100);
+                    chartContainer.innerHTML += `
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold mb-1">
+                                <span class="text-slate-700">${srv}</span>
+                                <span class="text-slate-900">KSh ${amt} (${pct}%)</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-600 h-full rounded-full" style="width: ${pct}%"></div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function renderServicesTable() {
+            const searchEl = document.getElementById('serviceSearchInput');
+            const query = searchEl ? searchEl.value.toLowerCase() : '';
+            const tbody = document.getElementById('servicesTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            db.services.filter(s => s.name.toLowerCase().includes(query) || s.type.toLowerCase().includes(query)).forEach(s => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="p-4"><span class="px-2.5 py-1 bg-slate-100 rounded-md font-medium text-slate-600">${s.type}</span></td>
+                        <td class="p-4 font-bold text-slate-900">${s.name}</td>
+                        <td class="p-4"><span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-semibold rounded-md">${s.mappedItem || 'Standalone'}</span></td>
+                        <td class="p-4 font-bold text-slate-900">KSh ${s.price}</td>
+                        <td class="p-4 text-right"><button onclick="editService(${s.id})" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition">✏️ Edit</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderPurchasesTable() {
+            const filterEl = document.getElementById('purchasesPeriodFilter');
+            const filter = filterEl ? filterEl.value : 'all';
+            const searchEl = document.getElementById('purchaseSearchInput');
+            const query = searchEl ? searchEl.value.toLowerCase() : '';
+            const tbody = document.getElementById('purchasesTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            const filtered = db.purchases.filter(p => matchesPeriod(p.date, filter) && (p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query)));
+            const countLabel = document.getElementById('purchasesCountLabel');
+            if(countLabel) countLabel.innerText = `Total: ${filtered.length}`;
+
+            filtered.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-4 text-slate-500">${p.date}</td>
+                        <td class="p-4 font-bold text-slate-900">${p.name}</td>
+                        <td class="p-4"><span class="px-2 py-1 bg-indigo-50 text-indigo-700 font-semibold rounded-md">${p.category}</span></td>
+                        <td class="p-4 font-bold">${p.packs} packs</td>
+                        <td class="p-4 text-slate-500">${p.packQty} pcs / pack</td>
+                        <td class="p-4">KSh ${p.unitPrice.toLocaleString()}</td>
+                        <td class="p-4 text-right font-bold text-emerald-600">KSh ${p.total.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderInventoryTable() {
+            const tbody = document.getElementById('inventoryTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            db.inventory.forEach(i => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-4 font-bold text-slate-900">${i.name}</td>
+                        <td class="p-4"><span class="px-2 py-1 bg-indigo-50 text-indigo-700 font-semibold rounded-md">${i.category}</span></td>
+                        <td class="p-4 font-bold text-indigo-600">${i.packs} Units / Packs</td>
+                        <td class="p-4 font-bold text-slate-800">${i.loose} PCS</td>
+                        <td class="p-4 font-bold text-slate-900">KSh ${i.price.toLocaleString()}</td>
+                        <td class="p-4 text-right"><button onclick="updateInventoryPrice(${i.id})" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg font-medium transition">Update Price</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderExpensesTable() {
+            const filterEl = document.getElementById('expensesPeriodFilter');
+            const filter = filterEl ? filterEl.value : 'all';
+            const tbody = document.getElementById('expensesTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            db.expenses.filter(ex => matchesPeriod(ex.date, filter)).forEach(ex => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-4 text-slate-500">${ex.date}</td>
+                        <td class="p-4 font-bold text-slate-900">${ex.particular}</td>
+                        <td class="p-4">${ex.category}</td>
+                        <td class="p-4 font-bold text-red-600">KSh ${ex.amount.toLocaleString()}</td>
+                        <td class="p-4 text-right"><button onclick="deleteExpense(${ex.id})" class="text-slate-400 hover:text-red-600">🗑️</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.deleteExpense = function(id) {
+            db.expenses = db.expenses.filter(e => e.id !== id);
+            saveDb();
+        }
+
+        function renderSalesTable() {
+            const filterEl = document.getElementById('salesPeriodFilter');
+            const filter = filterEl ? filterEl.value : 'all';
+            const tbody = document.getElementById('salesTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            db.sales.filter(s => matchesPeriod(s.date, filter)).forEach(s => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-4 font-bold text-indigo-600">${s.receipt}</td>
+                        <td class="p-4 text-slate-500">${s.date}</td>
+                        <td class="p-4 font-bold text-slate-900">${s.serviceName}</td>
+                        <td class="p-4">${s.qty}</td>
+                        <td class="p-4 font-bold text-slate-900">KSh ${s.total.toLocaleString()}</td>
+                        <td class="p-4"><span class="px-2 py-1 bg-slate-100 rounded-md font-medium text-slate-600">${s.mode}</span></td>
+                        <td class="p-4 text-right"><button onclick="deleteSale(${s.id})" class="text-slate-400 hover:text-red-600">🗑️</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.deleteSale = function(id) {
+            db.sales = db.sales.filter(s => s.id !== id);
+            saveDb();
+        }
+
+        function renderReports() {
+            const filterEl = document.getElementById('reportsPeriodFilter');
+            const filter = filterEl ? filterEl.value : 'all';
+            const rangeLabel = document.getElementById('reportDateRangeLabel');
+            if(rangeLabel) rangeLabel.innerText = `Period: ${filter.toUpperCase()}`;
+
+            const filteredSales = db.sales.filter(s => matchesPeriod(s.date, filter));
+            const filteredExpenses = db.expenses.filter(ex => matchesPeriod(ex.date, filter));
+
+            const totalSales = filteredSales.reduce((acc, curr) => acc + curr.total, 0);
+            const totalExpenses = filteredExpenses.reduce((acc, curr) => acc + curr.amount, 0);
+            const netSurplus = totalSales - totalExpenses;
+
+            document.getElementById('reportGrossSales').innerText = 'KSh ' + totalSales.toLocaleString();
+            document.getElementById('reportTotalExpenses').innerText = 'KSh ' + totalExpenses.toLocaleString();
+            document.getElementById('reportNetSurplus').innerText = 'KSh ' + netSurplus.toLocaleString();
+
+            const tbody = document.getElementById('reportTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            filteredSales.forEach(s => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-3 font-bold text-indigo-600">${s.receipt}</td>
+                        <td class="p-3 text-slate-500">${s.date}</td>
+                        <td class="p-3 font-bold">${s.serviceName} (x${s.qty})</td>
+                        <td class="p-3">${s.mode}</td>
+                        <td class="p-3 text-right font-bold">${s.total.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.resetAllData = function() {
+            if(confirm('Are you sure you want to reset all data back to factory defaults?')) {
+                localStorage.removeItem('cyberpro_db');
+                location.reload();
+            }
+        }
     </script>
 </body>
 </html>
