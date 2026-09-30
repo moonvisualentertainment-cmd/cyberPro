@@ -49,10 +49,6 @@
                     Sign In
                 </button>
             </form>
-
-            <div class="text-center mt-6">
-                <p class="text-xs text-gray-400">Default: admin / Man1234 | staff / S1234</p>
-            </div>
         </div>
     </div>
 
@@ -116,7 +112,7 @@
                 <p class="text-xs text-slate-500 uppercase font-semibold">System Status</p>
                 <div class="flex items-center space-x-2 mt-1">
                     <span id="syncIndicatorDot" class="h-2 w-2 rounded-full bg-emerald-400"></span>
-                    <span id="syncIndicatorText" class="text-xs text-slate-300 font-medium">Local Storage Active</span>
+                    <span id="syncIndicatorText" class="text-xs text-slate-300 font-medium">Firebase Connected</span>
                 </div>
             </div>
         </aside>
@@ -232,8 +228,9 @@
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-                        <div class="p-4 border-b border-slate-100">
+                        <div class="p-4 border-b border-slate-100 flex justify-between items-center">
                             <input type="text" id="serviceSearchInput" oninput="renderServicesTable()" placeholder="Search services..." class="w-full max-w-sm px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <span class="text-xs font-semibold text-slate-500" id="servicesCountLabel">Total: 0</span>
                         </div>
                         <table class="w-full text-left border-collapse">
                             <thead>
@@ -303,6 +300,9 @@
                             <h3 class="font-bold text-slate-900">Inventory & Stock Balances</h3>
                             <p class="text-xs text-slate-500">Overview of current stock balances in store (Packs & Loose Available) with price adjustment support.</p>
                         </div>
+                        <button onclick="openInventoryItemModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow transition">
+                            + Add Inventory Item
+                        </button>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
                         <table class="w-full text-left border-collapse">
@@ -342,7 +342,7 @@
 
                         <div class="space-y-2">
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">2. Upload CSV File or Paste Data</label>
-                            <input type="file" id="batchUploadFile" accept=".csv, .txt" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                            <input type="file" id="batchUploadFile" accept=".csv, .txt" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-150">
                         </div>
 
                         <div class="space-y-2">
@@ -490,7 +490,30 @@
         </div>
     </div>
 
-    <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+    <!-- ==================== FIREBASE SDKs & JAVASCRIPT LOGIC ==================== -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCotlC0H6WJEiVkuYLqIWfK775c9LFAse4",
+            authDomain: "cyber-pro-6d86c.firebaseapp.com",
+            databaseURL: "https://cyber-pro-6d86c-default-rtdb.firebaseio.com",
+            projectId: "cyber-pro-6d86c",
+            storageBucket: "cyber-pro-6d86c.firebasestorage.app",
+            messagingSenderId: "765958355456",
+            appId: "1:765958355456:web:ab184bd7496cbde777b6e5",
+            measurementId: "G-FYLVZPVGLW"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        console.log("Firebase initialized successfully for:", firebaseConfig.projectId);
+    </script>
+
     <script>
         // State Initialization with LocalStorage Persistence
         let currentUser = JSON.parse(localStorage.getItem('cyber_current_user')) || null;
@@ -731,7 +754,6 @@
             if (matchedService && matchedService.mappedItem && matchedService.mappedItem !== 'None') {
                 const invItem = inventoryData.find(i => i.name === matchedService.mappedItem);
                 if (invItem) {
-                    // Deduct from loose first, then packs if necessary
                     let remainingDeduction = qty;
                     if (invItem.loose >= remainingDeduction) {
                         invItem.loose -= remainingDeduction;
@@ -740,7 +762,7 @@
                         invItem.loose = 0;
                         while (remainingDeduction > 0 && invItem.packs > 0) {
                             invItem.packs -= 1;
-                            invItem.loose += (500 - remainingDeduction); // standard pack size or remainder
+                            invItem.loose += (500 - remainingDeduction);
                             remainingDeduction = 0;
                         }
                     }
@@ -852,31 +874,39 @@
             renderExpensesTable();
         }
 
-        // Services Directory Rendering
+        // Services Directory Rendering & Modification
         function renderServicesTable() {
             const tbody = document.getElementById('servicesTableBody');
             const search = document.getElementById('serviceSearchInput').value.toLowerCase();
             let html = '';
-            servicesData.filter(s => s.name.toLowerCase().includes(search) || s.type.toLowerCase().includes(search)).forEach((srv, index) => {
+            const filtered = servicesData.filter(s => s.name.toLowerCase().includes(search) || s.type.toLowerCase().includes(search));
+            
+            filtered.forEach((srv, index) => {
+                const originalIndex = servicesData.indexOf(srv);
                 html += `
                     <tr class="hover:bg-slate-50/50">
                         <td class="p-4 font-semibold text-slate-600">${srv.type}</td>
                         <td class="p-4 font-bold text-slate-800">${srv.name}</td>
                         <td class="p-4 text-slate-500">${srv.mappedItem}</td>
                         <td class="p-4 font-bold text-indigo-600">KSh ${srv.price.toLocaleString()}</td>
-                        <td class="p-4 text-right">
-                            <button onclick="deleteService(${index})" class="text-red-500 hover:text-red-700 font-semibold text-xs">Delete</button>
+                        <td class="p-4 text-right space-x-2">
+                            <button onclick="openEditServiceModal(${originalIndex})" class="text-indigo-600 hover:text-indigo-800 font-semibold text-xs">Edit</button>
+                            <button onclick="deleteService(${originalIndex})" class="text-red-500 hover:text-red-700 font-semibold text-xs">Delete</button>
                         </td>
                     </tr>
                 `;
             });
             tbody.innerHTML = html || `<tr><td colspan="5" class="text-center py-6 text-slate-400">No services found.</td></tr>`;
+            document.getElementById('servicesCountLabel').innerText = `Total: ${servicesData.length}`;
         }
 
         function openServiceModal() {
             activeModalType = 'service';
             const modal = document.getElementById('universalModal');
             document.getElementById('modalTitle').innerText = 'Add New Service';
+            
+            let inventoryOptions = `<option value="None">None (No Mapping)</option>` + inventoryData.map(i => `<option value="${i.name}">${i.name}</option>`).join('');
+
             document.getElementById('modalBody').innerHTML = `
                 <div class="space-y-4">
                     <div>
@@ -889,7 +919,9 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Mapped Inventory Item</label>
-                        <input type="text" id="srvMapped" placeholder="e.g. Cover Paper" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                        <select id="srvMapped" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                            ${inventoryOptions}
+                        </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Price (KSh)</label>
@@ -897,6 +929,43 @@
                     </div>
                     <div class="flex justify-end pt-4 border-t">
                         <button type="button" onclick="handleSaveService()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl hover:bg-indigo-700 transition">Save Service</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function openEditServiceModal(index) {
+            const srv = servicesData[index];
+            activeModalType = 'editService';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = `Edit Service: ${srv.name}`;
+            
+            let inventoryOptions = `<option value="None" ${srv.mappedItem === 'None' ? 'selected' : ''}>None (No Mapping)</option>` + 
+                inventoryData.map(i => `<option value="${i.name}" ${srv.mappedItem === i.name ? 'selected' : ''}>${i.name}</option>`).join('');
+
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Service Type / Category</label>
+                        <input type="text" id="srvType" value="${srv.type}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Service Item Name</label>
+                        <input type="text" id="srvName" value="${srv.name}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Mapped Inventory Item</label>
+                        <select id="srvMapped" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                            ${inventoryOptions}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Price (KSh)</label>
+                        <input type="number" id="srvPrice" value="${srv.price}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="button" onclick="saveServiceEdit(${index})" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl hover:bg-indigo-700 transition">Update Service</button>
                     </div>
                 </div>
             `;
@@ -915,6 +984,17 @@
             }
 
             servicesData.push({ type, name, mappedItem, price });
+            localStorage.setItem('cyber_services', JSON.stringify(servicesData));
+            closeModal();
+            renderServicesTable();
+        }
+
+        function saveServiceEdit(index) {
+            servicesData[index].type = document.getElementById('srvType').value;
+            servicesData[index].name = document.getElementById('srvName').value;
+            servicesData[index].mappedItem = document.getElementById('srvMapped').value;
+            servicesData[index].price = parseFloat(document.getElementById('srvPrice').value) || 0;
+
             localStorage.setItem('cyber_services', JSON.stringify(servicesData));
             closeModal();
             renderServicesTable();
@@ -1030,6 +1110,58 @@
                 `;
             });
             tbody.innerHTML = html || `<tr><td colspan="6" class="text-center py-6 text-slate-400">No inventory balances found.</td></tr>`;
+        }
+
+        function openInventoryItemModal() {
+            activeModalType = 'addInventory';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = 'Add Inventory Item';
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Item Name</label>
+                        <input type="text" id="invName" placeholder="e.g. Laminating Pouches" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+                        <input type="text" id="invCategory" placeholder="e.g. Binding Consumables" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Initial Packs</label>
+                        <input type="number" id="invPacks" value="1" min="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Initial Loose Pieces</label>
+                        <input type="number" id="invLoose" value="100" min="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Unit Price (KSh)</label>
+                        <input type="number" id="invPrice" placeholder="e.g. 500" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="button" onclick="saveNewInventoryItem()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl hover:bg-indigo-700 transition">Save Item</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function saveNewInventoryItem() {
+            const name = document.getElementById('invName').value;
+            const category = document.getElementById('invCategory').value;
+            const packs = parseInt(document.getElementById('invPacks').value) || 0;
+            const loose = parseInt(document.getElementById('invLoose').value) || 0;
+            const unitPrice = parseFloat(document.getElementById('invPrice').value) || 0;
+
+            if (!name) {
+                alert('Please enter item name.');
+                return;
+            }
+
+            inventoryData.push({ name, category, packs, loose, unitPrice });
+            localStorage.setItem('cyber_inventory', JSON.stringify(inventoryData));
+            closeModal();
+            renderInventoryTable();
         }
 
         function openInventoryEditModal(index) {
