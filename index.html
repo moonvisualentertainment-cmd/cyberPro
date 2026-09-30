@@ -1,790 +1,1204 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberCafé Pro - Management System</title>
-    <!-- Tailwind CSS CDN -->
+    <title id="pageTitleMeta">CyberCafé Pro - Management System</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-    </style>
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased">
+<body class="bg-slate-900 min-h-screen font-sans text-slate-800">
 
-    <!-- LOGIN SCREEN -->
-    <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900 bg-opacity-95">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 border border-slate-200">
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 text-white rounded-xl shadow-lg mb-4 text-2xl font-bold">
-                    CP
+    <!-- ==================== LOGIN SCREEN ==================== -->
+    <div id="loginSection" class="flex items-center justify-center min-h-screen bg-slate-900">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+            <div class="flex justify-center mb-6">
+                <div class="bg-indigo-600 text-white p-4 rounded-xl shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
                 </div>
-                <h1 class="text-2xl font-bold text-slate-900">CyberCafé Pro</h1>
-                <p class="text-sm text-slate-500 mt-1">Sign in to access management console</p>
             </div>
-            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
+
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-900"><span id="loginBrandName">CyberCafé Pro</span></h1>
+                <p class="text-sm text-gray-500 mt-1">Sign in to continue</p>
+            </div>
+
+            <div id="loginError" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-xs rounded-xl text-center font-medium">
+                Invalid username or password. Check credentials.
+            </div>
+
+            <form id="loginForm" class="space-y-5">
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Username</label>
-                    <input type="text" id="loginUser" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm" placeholder="e.g. admin or staff">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">Username</label>
+                    <input type="text" id="username" required 
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+                        placeholder="e.g. admin or staff">
                 </div>
+
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Password</label>
-                    <input type="password" id="loginPass" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm" placeholder="••••••••">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-2">Password</label>
+                    <input type="password" id="password" required 
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+                        placeholder="********">
                 </div>
-                <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200 text-sm">
+
+                <button type="submit" 
+                    class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/30 transition duration-200">
                     Sign In
                 </button>
             </form>
-            <div class="mt-6 text-center text-xs text-slate-400">
-                Default Admin: <span class="font-mono text-slate-600">admin / Man1234</span> | Staff: <span class="font-mono text-slate-600">staff / S1234</span>
+
+            <div class="text-center mt-6">
+                <p class="text-xs text-gray-400">Default: admin / Man1234 | staff / S1234</p>
             </div>
         </div>
     </div>
 
-    <!-- MAIN APP WRAPPER -->
-    <div id="appContainer" class="hidden flex h-screen overflow-hidden">
+
+    <!-- ==================== MAIN APPLICATION CONTAINER ==================== -->
+    <div id="appSection" class="hidden min-h-screen flex bg-slate-100 text-slate-800">
         
         <!-- SIDEBAR NAVIGATION -->
-        <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800">
-            <div class="p-6 border-b border-slate-800 flex items-center space-x-3">
-                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">CP</div>
-                <div>
-                    <h2 class="font-bold text-white text-base">CyberCafé Pro</h2>
-                    <p class="text-xs text-slate-400" id="userRoleDisplay">Administrator</p>
+        <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between border-r border-slate-800">
+            <div>
+                <!-- Brand Header -->
+                <div class="p-6 border-b border-slate-800 flex items-center space-x-3">
+                    <div class="bg-indigo-600 text-white p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-white font-bold text-base"><span class="sidebarBrandName">CyberCafé Pro</span></h1>
+                        <p class="text-xs text-slate-500">Management System</p>
+                    </div>
+                </div>
+
+                <!-- Nav Links -->
+                <div class="px-4 py-6 space-y-1">
+                    <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Navigation</p>
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+                        <span>Dashboard</span>
+                    </button>
+                    <button onclick="switchTab('services')" id="nav-services" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Services Directory</span>
+                    </button>
+                    <button onclick="switchTab('purchases')" id="nav-purchases" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Stock Purchases</span>
+                    </button>
+                    <button onclick="switchTab('inventory')" id="nav-inventory" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Stock Inventory</span>
+                    </button>
+                    <button onclick="switchTab('batchUpload')" id="nav-batchUpload" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>📦 Batch Upload Center</span>
+                    </button>
+                    <button onclick="switchTab('expenses')" id="nav-expenses" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Expenses</span>
+                    </button>
+                    <button onclick="switchTab('sales')" id="nav-sales" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Sales Ledger</span>
+                    </button>
+
+                    <p class="px-3 pt-6 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Administration</p>
+                    <button onclick="switchTab('reports')" id="nav-reports" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Reports</span>
+                    </button>
+                    <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Settings & Manager</span>
+                    </button>
                 </div>
             </div>
-            <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-                <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition bg-blue-600 text-white" data-target="dashboard">
-                    <i class="fa-solid fa-chart-pie w-5"></i><span>Dashboard</span>
-                </button>
-                <button onclick="switchTab('sales')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white" data-target="sales">
-                    <i class="fa-solid fa-cash-register w-5"></i><span>Sales Ledger</span>
-                </button>
-                <button onclick="switchTab('services')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white" data-target="services">
-                    <i class="fa-solid fa-list-check w-5"></i><span>Service Directory</span>
-                </button>
-                <button onclick="switchTab('purchases')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white" data-target="purchases">
-                    <i class="fa-solid fa-truck-ramp-box w-5"></i><span>Purchases</span>
-                </button>
-                <button onclick="switchTab('expenses')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white" data-target="expenses">
-                    <i class="fa-solid fa-receipt w-5"></i><span>Expenses</span>
-                </button>
-                <button onclick="switchTab('reports')" class="nav-btn admin-only w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white" data-target="reports">
-                    <i class="fa-solid fa-file-excel w-5"></i><span>Reports & Print</span>
-                </button>
-                <button onclick="switchTab('settings')" class="nav-btn admin-only w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-slate-800 hover:text-white" data-target="settings">
-                    <i class="fa-solid fa-gear w-5"></i><span>Settings & Users</span>
-                </button>
-            </nav>
-            <div class="p-4 border-t border-slate-800">
-                <button onclick="logout()" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition">
-                    <i class="fa-solid fa-right-from-bracket w-5"></i><span>Sign Out</span>
-                </button>
+
+            <!-- Sidebar Footer Status -->
+            <div class="p-4 border-t border-slate-800 bg-slate-950/40">
+                <p class="text-xs text-slate-500 uppercase font-semibold">System Status</p>
+                <div class="flex items-center space-x-2 mt-1">
+                    <span id="syncIndicatorDot" class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                    <span id="syncIndicatorText" class="text-xs text-slate-300 font-medium">Local Storage Active</span>
+                </div>
             </div>
         </aside>
 
         <!-- MAIN CONTENT AREA -->
-        <main class="flex-1 flex flex-col overflow-hidden">
-            <!-- Top bar -->
-            <header class="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between shadow-xs">
-                <div class="flex items-center space-x-3">
-                    <h2 id="pageTitle" class="text-lg font-bold text-slate-800">Dashboard Overview</h2>
+        <div class="flex-1 flex flex-col min-w-0">
+            <!-- Top Header -->
+            <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center shadow-xs">
+                <div>
+                    <h2 id="headerTitle" class="text-xl font-bold text-slate-900">Dashboard Overview</h2>
+                    <p id="headerSubtitle" class="text-xs text-slate-500">Real-time collections, payment breakdown, and today's service performance.</p>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <span id="currentDateDisplay" class="text-xs font-semibold px-3 py-1.5 bg-slate-100 rounded-full text-slate-600"></span>
-                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center text-sm" id="userInitial">A</div>
+                    <span class="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded-full" id="currentDateDisplay">Wed, 30 Sept 2026</span>
+                    <div class="flex items-center space-x-3 border-l pl-4 border-slate-200">
+                        <div class="text-right">
+                            <p class="text-xs font-bold text-slate-900" id="userRoleTitle">Manager: Admin</p>
+                            <p class="text-[10px] text-indigo-600 font-semibold uppercase tracking-wider">Active Session</p>
+                        </div>
+                        <div class="bg-indigo-100 text-indigo-700 font-bold h-9 w-9 rounded-full flex items-center justify-center text-sm" id="userAvatarInitials">AD</div>
+                        <button onclick="handleLogout()" title="Sign Out" class="p-2 text-slate-400 hover:text-red-600 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </header>
 
-            <!-- Scrollable Viewport -->
-            <div class="flex-1 overflow-y-auto p-8">
-                
+            <!-- Dynamic Tab Body -->
+            <main class="flex-1 p-8 overflow-y-auto">
+
                 <!-- 1. DASHBOARD TAB -->
-                <section id="tab-dashboard" class="tab-content space-y-6">
+                <div id="tab-dashboard" class="tab-content space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-200">
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Today's Revenue</p>
-                            <h3 id="dashRevenue" class="text-2xl font-bold text-slate-900 mt-2">Ksh 0.00</h3>
-                            <span class="text-xs text-emerald-600 font-semibold mt-1 inline-block"><i class="fa-solid fa-arrow-trend-up"></i> Live updates</span>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Today's Sales</p>
+                            <h3 class="text-2xl font-bold mt-2 text-slate-900" id="dashTotalSales">KSh 0</h3>
+                            <p class="text-xs text-emerald-600 font-semibold mt-1">↑ Total Gross</p>
                         </div>
-                        <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-200">
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Today's Total Expenses</p>
-                            <h3 id="dashExpenses" class="text-2xl font-bold text-rose-600 mt-2">Ksh 0.00</h3>
-                            <span class="text-xs text-slate-400 mt-1 inline-block">Recorded today</span>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Cash Received</p>
+                            <h3 class="text-2xl font-bold mt-2 text-emerald-600" id="dashCashSales">KSh 0</h3>
+                            <p class="text-xs text-slate-400 mt-1">Drawer Cash</p>
                         </div>
-                        <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-200">
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Transactions</p>
-                            <h3 id="dashTxCount" class="text-2xl font-bold text-slate-900 mt-2">0</h3>
-                            <span class="text-xs text-blue-600 font-semibold mt-1 inline-block">Sales logged today</span>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">M-Pesa Received</p>
+                            <h3 class="text-2xl font-bold mt-2 text-indigo-600" id="dashMpesaSales">KSh 0</h3>
+                            <p class="text-xs text-slate-400 mt-1">Digital Payments</p>
                         </div>
-                        <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-200">
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Active Service Items</p>
-                            <h3 id="dashServiceCount" class="text-2xl font-bold text-slate-900 mt-2">0</h3>
-                            <span class="text-xs text-purple-600 font-semibold mt-1 inline-block">Directory items</span>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Today Receipts</p>
+                            <h3 class="text-2xl font-bold mt-2 text-amber-600" id="dashReceiptsCount">0</h3>
+                            <p class="text-xs text-slate-400 mt-1">Completed Sales</p>
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-200">
-                        <h4 class="text-base font-bold text-slate-900 mb-4">Quick Actions & Shortcuts</h4>
-                        <div class="flex flex-wrap gap-4">
-                            <button onclick="switchTab('sales'); openNewSaleModal();" class="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm shadow-sm transition">
-                                <i class="fa-solid fa-plus mr-2"></i> Record New Sale
-                            </button>
-                            <button onclick="switchTab('expenses')" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
-                                <i class="fa-solid fa-receipt mr-2"></i> Log Expense
-                            </button>
-                            <button onclick="switchTab('purchases')" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
-                                <i class="fa-solid fa-truck mr-2"></i> Add Stock Purchase
-                            </button>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+                            <div>
+                                <h3 class="font-bold text-slate-900">Today's Payment Breakdown</h3>
+                                <p class="text-xs text-slate-500">Summary of cash vs M-PESA collections.</p>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
+                                <div>
+                                    <p class="text-xs font-bold text-slate-700">Physical Cash</p>
+                                    <p class="text-[10px] text-slate-400">Drawer collections</p>
+                                </div>
+                                <span class="font-bold text-emerald-600 text-sm" id="dashBreakdownCash">KSh 0</span>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
+                                <div>
+                                    <p class="text-xs font-bold text-slate-700">M-PESA Paybill/Till</p>
+                                    <p class="text-[10px] text-slate-400">Digital collections</p>
+                                </div>
+                                <span class="font-bold text-indigo-600 text-sm" id="dashBreakdownMpesa">KSh 0</span>
+                            </div>
+                            <div class="pt-4 border-t border-slate-100 flex justify-between text-xs">
+                                <span class="text-slate-500 font-medium">Active Shift Status</span>
+                                <span class="text-emerald-600 font-bold">Balanced</span>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h3 class="font-bold text-slate-900">Today's Service Sales Performance</h3>
+                                    <p class="text-xs text-slate-500">Breakdown of services sold today.</p>
+                                </div>
+                                <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-semibold rounded-full">Live Feed</span>
+                            </div>
+                            <div id="dashServiceChartContainer" class="space-y-4 pt-2">
+                                <p class="text-xs text-slate-400 text-center py-6">No sales recorded for today yet. Use the Sales Ledger tab to record a sale.</p>
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <!-- 2. SALES LEDGER TAB -->
-                <section id="tab-sales" class="tab-content hidden space-y-6">
-                    <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-xs border border-slate-200">
+                <!-- 2. SERVICES DIRECTORY TAB -->
+                <div id="tab-services" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-xs gap-4">
                         <div>
-                            <h3 class="text-lg font-bold text-slate-900">Sales Ledger & Invoicing</h3>
-                            <p class="text-sm text-slate-500">Monitor all customer payments, item sales, and collection channels.</p>
+                            <h3 class="font-bold text-slate-900">Services Directory & Price Mapping</h3>
+                            <p class="text-xs text-slate-500">Manage service pricing, mapped inventory deduction items, and catalog items.</p>
                         </div>
-                        <button onclick="openNewSaleModal()" class="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm shadow-sm transition">
-                            <i class="fa-solid fa-plus mr-2"></i> New Sale
-                        </button>
-                    </div>
-
-                    <div class="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-50 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-200">
-                                        <th class="py-4 px-6 font-semibold">Receipt #</th>
-                                        <th class="py-4 px-6 font-semibold">Date & Time</th>
-                                        <th class="py-4 px-6 font-semibold">Service / Item Name</th>
-                                        <th class="py-4 px-6 font-semibold">Qty</th>
-                                        <th class="py-4 px-6 font-semibold">Total Billed</th>
-                                        <th class="py-4 px-6 font-semibold">Payment Mode</th>
-                                        <th class="py-4 px-6 font-semibold">Status</th>
-                                        <th class="py-4 px-6 font-semibold text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="salesTableBody" class="divide-y divide-slate-100 text-sm">
-                                    <!-- Injected via JS -->
-                                </tbody>
-                            </table>
+                        <div class="flex items-center space-x-3 w-full md:w-auto">
+                            <button onclick="switchTab('batchUpload')" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow transition whitespace-nowrap">
+                                📦 + Batch Upload Center
+                            </button>
+                            <button onclick="openServiceModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition whitespace-nowrap">
+                                + Add New Service
+                            </button>
                         </div>
                     </div>
-                </section>
-
-                <!-- 3. SERVICE DIRECTORY TAB -->
-                <section id="tab-services" class="tab-content hidden space-y-6">
-                    <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-xs border border-slate-200">
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-900">Service Directory</h3>
-                            <p class="text-sm text-slate-500">Manage rates, pricing, and types of services offered.</p>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <div class="p-4 border-b border-slate-100">
+                            <input type="text" id="serviceSearchInput" oninput="renderServicesTable()" placeholder="Search services..." class="w-full max-w-sm px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
-                        <button onclick="openServiceModal()" class="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm shadow-sm transition">
-                            <i class="fa-solid fa-plus mr-2"></i> Add Service Item
-                        </button>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="bg-slate-50 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-200">
-                                    <th class="py-4 px-6 font-semibold">Item / Service Name</th>
-                                    <th class="py-4 px-6 font-semibold">Category</th>
-                                    <th class="py-4 px-6 font-semibold">Set Price (Ksh)</th>
-                                    <th class="py-4 px-6 font-semibold text-right">Action</th>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Service Type</th>
+                                    <th class="p-4">Service Item Name</th>
+                                    <th class="p-4">Mapped Inventory Item</th>
+                                    <th class="p-4">Price (KSh)</th>
+                                    <th class="p-4 text-right">Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="servicesTableBody" class="divide-y divide-slate-100 text-sm">
-                                <!-- Injected via JS -->
+                            <tbody id="servicesTableBody" class="divide-y divide-slate-100 text-xs">
+                                <!-- Populated by JS -->
                             </tbody>
                         </table>
                     </div>
-                </section>
+                </div>
 
-                <!-- 4. PURCHASES TAB -->
-                <section id="tab-purchases" class="tab-content hidden space-y-6">
-                    <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-xs border border-slate-200">
+                <!-- 3. STOCK PURCHASES TAB -->
+                <div id="tab-purchases" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-xs gap-4">
                         <div>
-                            <h3 class="text-lg font-bold text-slate-900">Purchases & Supplier Stock</h3>
-                            <p class="text-sm text-slate-500">Track raw inventory purchases, supplier orders, and supply costs.</p>
+                            <h3 class="font-bold text-slate-900">Stock Purchases</h3>
+                            <p class="text-xs text-slate-500">Record and review new stock purchases, pack quantities, unit prices, and total costs.</p>
                         </div>
-                        <button onclick="openPurchaseModal()" class="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm shadow-sm transition">
-                            <i class="fa-solid fa-plus mr-2"></i> Record Purchase
-                        </button>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-200">
-                                    <th class="py-4 px-6 font-semibold">Date</th>
-                                    <th class="py-4 px-6 font-semibold">Item / Supply</th>
-                                    <th class="py-4 px-6 font-semibold">Supplier</th>
-                                    <th class="py-4 px-6 font-semibold">Quantity</th>
-                                    <th class="py-4 px-6 font-semibold">Total Cost (Ksh)</th>
-                                    <th class="py-4 px-6 font-semibold text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="purchasesTableBody" class="divide-y divide-slate-100 text-sm">
-                                <!-- Injected via JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- 5. EXPENSES TAB -->
-                <section id="tab-expenses" class="tab-content hidden space-y-6">
-                    <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-xs border border-slate-200">
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-900">Operational Expenses</h3>
-                            <p class="text-sm text-slate-500">Record daily bills, power tokens, internet subscriptions, and miscellaneous costs.</p>
-                        </div>
-                        <button onclick="openExpenseModal()" class="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm shadow-sm transition">
-                            <i class="fa-solid fa-plus mr-2"></i> Log Expense
-                        </button>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-200">
-                                    <th class="py-4 px-6 font-semibold">Date</th>
-                                    <th class="py-4 px-6 font-semibold">Expense Particular</th>
-                                    <th class="py-4 px-6 font-semibold">Category</th>
-                                    <th class="py-4 px-6 font-semibold">Amount (Ksh)</th>
-                                    <th class="py-4 px-6 font-semibold text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="expensesTableBody" class="divide-y divide-slate-100 text-sm">
-                                <!-- Injected via JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- 6. REPORTS TAB -->
-                <section id="tab-reports" class="tab-content hidden space-y-6">
-                    <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-200">
-                        <h3 class="text-lg font-bold text-slate-900 mb-2">Financial Reports & Exports</h3>
-                        <p class="text-sm text-slate-500 mb-6">Generate summaries or print official copies for daily accounting audits.</p>
-                        <div class="flex flex-wrap gap-4">
-                            <button onclick="exportReportXLS()" class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm transition">
-                                <i class="fa-solid fa-file-excel mr-2"></i> Download Excel Report (.xls)
-                            </button>
-                            <button onclick="printReportPDF()" class="px-5 py-3 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-xl text-sm transition">
-                                <i class="fa-solid fa-print mr-2"></i> Print Official Summary
+                        <div class="flex items-center space-x-3 w-full md:w-auto">
+                            <select id="purchasesPeriodFilter" onchange="renderPurchasesTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Time</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="30days">Last 30 Days</option>
+                                <option value="3months">Last 3 Months</option>
+                            </select>
+                            <button onclick="openPurchaseModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition whitespace-nowrap">
+                                + Add Stock Purchase
                             </button>
                         </div>
                     </div>
-                </section>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                            <input type="text" id="purchaseSearchInput" oninput="renderPurchasesTable()" placeholder="Search purchased items..." class="w-full max-w-sm px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <span class="text-xs font-semibold text-slate-500" id="purchasesCountLabel">Total: 0</span>
+                        </div>
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Date / Time</th>
+                                    <th class="p-4">Item Name</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Packs / Qty</th>
+                                    <th class="p-4">Pack Quantity (Pcs)</th>
+                                    <th class="p-4">Unit Price</th>
+                                    <th class="p-4 text-right">Total Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchasesTableBody" class="divide-y divide-slate-100 text-xs">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-                <!-- 7. SETTINGS & USERS TAB -->
-                <section id="tab-settings" class="tab-content hidden space-y-6">
-                    <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-200 max-w-xl">
-                        <h3 class="text-lg font-bold text-slate-900 mb-4">User Access Accounts</h3>
-                        <div class="space-y-4" id="userManagementList">
-                            <!-- Injected via JS -->
+                <!-- 4. STOCK INVENTORY TAB -->
+                <div id="tab-inventory" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Inventory & Stock Balances</h3>
+                            <p class="text-xs text-slate-500">Overview of current stock balances in store (Packs & Loose Available) with price adjustment support.</p>
                         </div>
                     </div>
-                </section>
-
-            </div>
-        </main>
-    </div>
-
-    <!-- MODAL: NEW SALE -->
-    <div id="newSaleModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900 bg-opacity-60">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 border border-slate-200">
-            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
-                <h3 class="font-bold text-slate-900 text-base">Record New Sale</h3>
-                <button onclick="closeModal('newSaleModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <form onsubmit="submitNewSale(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Search & Select Service Item</label>
-                    <select id="saleItemSelect" onchange="onSaleItemSelected()" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-600">
-                        <option value="">-- Select Service Item --</option>
-                    </select>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Quantity</label>
-                        <input type="number" id="saleQty" min="1" value="1" oninput="calculateSaleTotal()" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-600">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Unit Price (Ksh)</label>
-                        <input type="number" id="saleUnitPrice" readonly class="w-full px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-300 text-sm text-slate-600">
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Item Name</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Total Packs Available</th>
+                                    <th class="p-4">Loose Available (Pcs)</th>
+                                    <th class="p-4">Unit Price</th>
+                                    <th class="p-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody" class="divide-y divide-slate-100 text-xs">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Total Amount Billed (Ksh)</label>
-                    <input type="number" id="saleTotalBilled" readonly class="w-full px-4 py-2.5 rounded-lg bg-slate-100 font-bold border border-slate-300 text-sm text-slate-900">
+
+                <!-- 5. BATCH UPLOAD CENTER TAB -->
+                <div id="tab-batchUpload" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+                        <h3 class="font-bold text-slate-900 text-base">Centralized Batch Upload Center</h3>
+                        <p class="text-xs text-slate-500">Select your destination tab, upload your CSV file or paste raw rows, and save to instantly reflect changes on the respective system tab.</p>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-xs max-w-2xl space-y-6">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">1. Select Destination System Tab</label>
+                            <select id="batchUploadTarget" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="services">Services Directory</option>
+                                <option value="purchases">Stock Purchases</option>
+                                <option value="inventory">Stock Inventory</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">2. Upload CSV File or Paste Data</label>
+                            <input type="file" id="batchUploadFile" accept=".csv, .txt" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-semibold text-slate-500">Alternatively, Paste CSV Rows Below (One per line):</label>
+                            <textarea id="batchUploadText" rows="6" placeholder="Format depends on target selected..." class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                        </div>
+
+                        <div id="batchFormatHint" class="p-4 bg-indigo-50/60 border border-indigo-100 rounded-xl text-xs text-indigo-800 space-y-1">
+                            <p class="font-bold">Format Guide (Services):</p>
+                            <p class="font-mono text-[11px]">Type | Service Name | Mapped Item | Price (e.g. Document Services | Color Print | A4 Paper | 20)</p>
+                        </div>
+
+                        <div class="flex justify-end pt-4 border-t">
+                            <button onclick="processCentralizedBatchUpload()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition">
+                                Save & Reflect on Respective Tab 🚀
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Payment Option</label>
-                    <select id="salePaymentMode" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-600">
-                        <option value="Cash">Cash</option>
-                        <option value="M-Pesa">M-Pesa</option>
-                    </select>
+
+                <!-- 6. EXPENSES TAB -->
+                <div id="tab-expenses" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-xs gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Operational Expenses</h3>
+                            <p class="text-xs text-slate-500">Log daily bills, utility tokens, and shop expenses.</p>
+                        </div>
+                        <div class="flex items-center space-x-3 w-full md:w-auto">
+                            <select id="expensesPeriodFilter" onchange="renderExpensesTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Time</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="30days">Last 30 Days</option>
+                                <option value="3months">Last 3 Months</option>
+                            </select>
+                            <button onclick="openExpenseModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition whitespace-nowrap">
+                                + Log Expense
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Date</th>
+                                    <th class="p-4">Particular</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Amount (KSH)</th>
+                                    <th class="p-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expensesTableBody" class="divide-y divide-slate-100 text-xs">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Confirm Amount Paid (Ksh)</label>
-                    <input type="number" id="saleAmountPaid" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-600" placeholder="Enter cash or M-Pesa amount confirmed">
+
+                <!-- 7. SALES LEDGER TAB -->
+                <div id="tab-sales" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-xs gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Sales Ledger & Invoicing</h3>
+                            <p class="text-xs text-slate-500">Monitor all customer payments and collections.</p>
+                        </div>
+                        <div class="flex items-center space-x-3 w-full md:w-auto">
+                            <select id="salesPeriodFilter" onchange="renderSalesTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Time</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="30days">Last 30 Days</option>
+                                <option value="3months">Last 3 Months</option>
+                            </select>
+                            <button onclick="openSaleModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition whitespace-nowrap">
+                                + New Sale
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Receipt #</th>
+                                    <th class="p-4">Date</th>
+                                    <th class="p-4">Service Name</th>
+                                    <th class="p-4">Qty</th>
+                                    <th class="p-4">Total Billed</th>
+                                    <th class="p-4">Payment Mode</th>
+                                    <th class="p-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesTableBody" class="divide-y divide-slate-100 text-xs">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-100">
-                    <button type="button" onclick="closeModal('newSaleModal')" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 text-sm font-semibold">Cancel</button>
-                    <button type="submit" class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-sm">Submit Sale</button>
+
+                <!-- 8. REPORTS TAB -->
+                <div id="tab-reports" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Financial Reports & Statements</h3>
+                            <p class="text-xs text-slate-500 mt-1">Review profitability, net totals, and summaries.</p>
+                        </div>
+                        <button onclick="openReportsModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition">
+                            Generate Full P&L Statement 📊
+                        </button>
+                    </div>
+                    <div id="reportsSummaryCard" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                        <!-- Populated by JS -->
+                    </div>
                 </div>
-            </form>
+
+                <!-- 9. SETTINGS TAB -->
+                <div id="tab-settings" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                        <h3 class="font-bold text-slate-900">System Management & Data Controls</h3>
+                        <p class="text-xs text-slate-500">Manage records and system cache preferences.</p>
+                        <div class="flex items-center space-x-4">
+                            <button onclick="openSettingsManagerModal()" class="px-4 py-2 bg-indigo-600 text-white font-semibold text-xs rounded-xl hover:bg-indigo-700 transition">
+                                Configure Business Details ⚙️
+                            </button>
+                            <button onclick="resetAllData()" class="px-4 py-2 bg-red-600 text-white font-semibold text-xs rounded-xl hover:bg-red-700 transition">
+                                Reset All Data Cache
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
         </div>
     </div>
 
-    <!-- MODAL: ADD SERVICE -->
-    <div id="serviceModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900 bg-opacity-60">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border border-slate-200">
-            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
-                <h3 class="font-bold text-slate-900 text-base">Add Service Item</h3>
-                <button onclick="closeModal('serviceModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+    <!-- ==================== UNIVERSAL MODALS ==================== -->
+    <div id="universalModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h3 id="modalTitle" class="font-bold text-slate-900 text-sm">Modal Title</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 font-bold text-base">&times;</button>
             </div>
-            <form onsubmit="submitNewService(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Service / Item Name</label>
-                    <input type="text" id="srvName" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm" placeholder="e.g. A4 Printing / B&W">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Category</label>
-                    <input type="text" id="srvCategory" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm" placeholder="e.g. Printing & Typing">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Set Price (Ksh)</label>
-                    <input type="number" id="srvPrice" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm" placeholder="e.g. 10">
-                </div>
-                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-100">
-                    <button type="button" onclick="closeModal('serviceModal')" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 text-sm font-semibold">Cancel</button>
-                    <button type="submit" class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold">Save Item</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL: ADD PURCHASE -->
-    <div id="purchaseModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900 bg-opacity-60">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border border-slate-200">
-            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
-                <h3 class="font-bold text-slate-900 text-base">Record Stock Purchase</h3>
-                <button onclick="closeModal('purchaseModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div id="modalBody" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+                <!-- Injected Form Fields -->
             </div>
-            <form onsubmit="submitNewPurchase(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Item / Supply Name</label>
-                    <input type="text" id="purItem" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm" placeholder="e.g. A4 Paper Reams">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Supplier</label>
-                    <input type="text" id="purSupplier" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm" placeholder="e.g. Chandaria Industries">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Quantity</label>
-                    <input type="number" id="purQty" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm" placeholder="e.g. 5">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Total Cost (Ksh)</label>
-                    <input type="number" id="purCost" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm" placeholder="e.g. 3500">
-                </div>
-                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-100">
-                    <button type="button" onclick="closeModal('purchaseModal')" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 text-sm font-semibold">Cancel</button>
-                    <button type="submit" class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold">Save Purchase</button>
-                </div>
-            </form>
         </div>
     </div>
 
-    <!-- MODAL: ADD EXPENSE -->
-    <div id="expenseModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900 bg-opacity-60">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border border-slate-200">
-            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
-                <h3 class="font-bold text-slate-900 text-base">Log Operational Expense</h3>
-                <button onclick="closeModal('expenseModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <form onsubmit="submitNewExpense(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Particular / Description</label>
-                    <input type="text" id="expTitle" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm" placeholder="e.g. Electricity Token">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Category</label>
-                    <input type="text" id="expCategory" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm" placeholder="e.g. Utilities">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Amount (Ksh)</label>
-                    <input type="number" id="expAmount" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm" placeholder="e.g. 1000">
-                </div>
-                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-100">
-                    <button type="button" onclick="closeModal('expenseModal')" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 text-sm font-semibold">Cancel</button>
-                    <button type="submit" class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold">Save Expense</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- APP CONTROLLER SCRIPT -->
+    <!-- ==================== JAVASCRIPT LOGIC ==================== -->
     <script>
-        // Default Mock Data Store
-        let currentUser = null;
+        // State Initialization with LocalStorage Persistence
+        let currentUser = JSON.parse(localStorage.getItem('cyber_current_user')) || null;
+        let businessName = localStorage.getItem('cyber_brand_name') || 'CyberCafé Pro';
         
-        let state = {
-            sales: JSON.parse(localStorage.getItem('cp_sales')) || [
-                { id: 'RCP-1001', date: new Date().toISOString().split('T')[0], itemName: 'A4 Printing / B&W', qty: 5, totalBilled: 50, mode: 'Cash', paid: 50, status: 'Completed' },
-                { id: 'RCP-1002', date: new Date().toISOString().split('T')[0], itemName: 'Color Printing', qty: 2, totalBilled: 100, mode: 'M-Pesa', paid: 100, status: 'Completed' }
-            ],
-            services: JSON.parse(localStorage.getItem('cp_services')) || [
-                { id: 1, name: 'A4 Printing / B&W', category: 'Printing', price: 10 },
-                { id: 2, name: 'Color Printing', category: 'Printing', price: 50 },
-                { id: 3, name: 'Typesetting (Per Page)', category: 'Secretarial', price: 30 },
-                { id: 4, name: 'Laminating A4', category: 'Finishing', price: 50 },
-                { id: 5, name: 'Internet Browsing (30 Mins)', category: 'Cyber', price: 30 }
-            ],
-            purchases: JSON.parse(localStorage.getItem('cp_purchases')) || [
-                { id: 1, date: '2026-09-20', item: 'A4 Paper Reams', supplier: 'Chandaria Industries', qty: 5, cost: 3500 }
-            ],
-            expenses: JSON.parse(localStorage.getItem('cp_expenses')) || [
-                { id: 1, date: new Date().toISOString().split('T')[0], title: 'Electricity Tokens', category: 'Utilities', amount: 1000 }
-            ],
-            users: [
-                { username: 'admin', role: 'admin', name: 'Administrator' },
-                { username: 'staff', role: 'staff', name: 'Frontdesk Staff' }
-            ]
-        };
+        let salesData = JSON.parse(localStorage.getItem('cyber_sales')) || [
+            { id: 'REC-1001', date: '2026-09-30 08:30', service: 'Color Print', qty: 5, total: 100, mode: 'Cash' },
+            { id: 'REC-1002', date: '2026-09-30 09:15', service: 'Typing & Editing', qty: 2, total: 100, mode: 'M-Pesa' }
+        ];
 
-        function saveState() {
-            localStorage.setItem('cp_sales', JSON.stringify(state.sales));
-            localStorage.setItem('cp_services', JSON.stringify(state.services));
-            localStorage.setItem('cp_purchases', JSON.stringify(state.purchases));
-            localStorage.setItem('cp_expenses', JSON.stringify(state.expenses));
-        }
+        let expensesData = JSON.parse(localStorage.getItem('cyber_expenses')) || [
+            { id: 'EXP-501', date: '2026-09-29', particular: 'Internet Token', category: 'Utilities', amount: 1500 }
+        ];
 
-        // Authentication Handler
-        function handleLogin(e) {
-            e.preventDefault();
-            const u = document.getElementById('loginUser').value.trim();
-            const p = document.getElementById('loginPass').value.trim();
-            
-            if ((u === 'admin' && p === 'Man1234') || (u === 'staff' && p === 'S1234')) {
-                currentUser = state.users.find(x => x.username === u);
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('appContainer').classList.remove('hidden');
-                initApp();
+        let servicesData = JSON.parse(localStorage.getItem('cyber_services')) || [
+            { type: 'Document Services', name: 'Color Print', mappedItem: 'A4 Paper', price: 20 },
+            { type: 'Secretarial', name: 'Typing & Editing', mappedItem: 'None', price: 50 },
+            { type: 'Document Services', name: 'Photocopy', mappedItem: 'A4 Paper', price: 5 }
+        ];
+
+        let purchasesData = JSON.parse(localStorage.getItem('cyber_purchases')) || [
+            { date: '2026-09-25 10:00', name: 'A4 Paper', category: 'Printing Consumables', packs: 2, packQty: 500, unitPrice: 650, total: 1300 }
+        ];
+
+        let inventoryData = JSON.parse(localStorage.getItem('cyber_inventory')) || [
+            { name: 'A4 Paper', category: 'Printing Consumables', packs: 2, loose: 450, unitPrice: 650 }
+        ];
+
+        let activeModalType = null;
+
+        // Lifecycle & Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            applyBrandName();
+            if (currentUser) {
+                showAppSection();
             } else {
-                alert('Invalid credentials! Use admin/Man1234 or staff/S1234.');
+                showLoginSection();
             }
+
+            document.getElementById('loginForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const user = document.getElementById('username').value.trim();
+                const pass = document.getElementById('password').value.trim();
+
+                if ((user === 'admin' && pass === 'Man1234') || (user === 'staff' && pass === 'S1234')) {
+                    currentUser = { username: user, role: user === 'admin' ? 'Admin' : 'Staff' };
+                    localStorage.setItem('cyber_current_user', JSON.stringify(currentUser));
+                    document.getElementById('loginError').classList.add('hidden');
+                    showAppSection();
+                } else {
+                    document.getElementById('loginError').classList.remove('hidden');
+                }
+            });
+        });
+
+        function applyBrandName() {
+            document.querySelectorAll('.sidebarBrandName').forEach(el => el.innerText = businessName);
+            document.getElementById('loginBrandName').innerText = businessName;
+            document.getElementById('pageTitleMeta').innerText = `${businessName} - Management System`;
         }
 
-        function logout() {
+        function handleLogout() {
             currentUser = null;
-            document.getElementById('appContainer').classList.add('hidden');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('loginForm').reset();
+            localStorage.removeItem('cyber_current_user');
+            showLoginSection();
         }
 
-        function initApp() {
-            document.getElementById('userRoleDisplay').innerText = currentUser.role === 'admin' ? 'Administrator' : 'Staff Member';
-            document.getElementById('userInitial').innerText = currentUser.name.charAt(0);
-            document.getElementById('currentDateDisplay').innerText = new Date().toLocaleDateString('en-KE', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-
-            // Hide admin elements if staff
-            if (currentUser.role !== 'admin') {
-                document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
-            }
-
-            renderDashboard();
-            renderSales();
-            renderServices();
-            renderPurchases();
-            renderExpenses();
-            renderSettings();
-            populateServiceDropdown();
+        function showLoginSection() {
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('appSection').classList.add('hidden');
         }
 
-        // Tab Switcher
+        function showAppSection() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('appSection').classList.remove('hidden');
+            document.getElementById('userRoleTitle').innerText = `Manager: ${currentUser.role}`;
+            document.getElementById('userAvatarInitials').innerText = currentUser.role === 'Admin' ? 'AD' : 'ST';
+            switchTab('dashboard');
+        }
+
+        // Navigation Switching
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-600', 'text-white');
-                btn.classList.add('hover:bg-slate-800', 'hover:text-white');
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
+                el.classList.add('hover:bg-slate-800', 'text-slate-300');
             });
-            const activeBtn = document.querySelector(`.nav-btn[data-target="${tabId}"]`);
-            if (activeBtn) {
-                activeBtn.classList.add('bg-blue-600', 'text-white');
-                activeBtn.classList.remove('hover:bg-slate-800', 'hover:text-white');
+
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            const targetNav = document.getElementById(`nav-${tabId}`);
+            if (targetTab) targetTab.classList.remove('hidden');
+            if (targetNav) {
+                targetNav.classList.remove('hover:bg-slate-800', 'text-slate-300');
+                targetNav.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
             }
-            const titles = { dashboard: 'Dashboard Overview', sales: 'Sales Ledger & Invoicing', services: 'Service Directory', purchases: 'Purchases & Stock', expenses: 'Operational Expenses', reports: 'Financial Reports', settings: 'Settings & Users' };
-            document.getElementById('pageTitle').innerText = titles[tabId] || 'Management';
+
+            if (tabId === 'dashboard') renderDashboard();
+            if (tabId === 'sales') renderSalesTable();
+            if (tabId === 'expenses') renderExpensesTable();
+            if (tabId === 'services') renderServicesTable();
+            if (tabId === 'purchases') renderPurchasesTable();
+            if (tabId === 'inventory') renderInventoryTable();
+            if (tabId === 'reports') renderReportsView();
         }
 
-        // Modal Controls
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
-
-        // 1. DASHBOARD & METRICS
+        // Dashboard Metrics Calculation & Rendering
         function renderDashboard() {
-            const todayStr = new Date().toISOString().split('T')[0];
-            const todaySales = state.sales.filter(s => s.date === todayStr);
-            const totalRev = todaySales.reduce((sum, s) => sum + parseFloat(s.paid || 0), 0);
-            
-            const todayExpenses = state.expenses.filter(e => e.date === todayStr);
-            const totalExp = todayExpenses.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+            const totalSales = salesData.reduce((acc, curr) => acc + curr.total, 0);
+            const cashSales = salesData.filter(s => s.mode === 'Cash').reduce((acc, curr) => acc + curr.total, 0);
+            const mpesaSales = salesData.filter(s => s.mode === 'M-Pesa').reduce((acc, curr) => acc + curr.total, 0);
 
-            document.getElementById('dashRevenue').innerText = `Ksh ${totalRev.toLocaleString()}`;
-            document.getElementById('dashExpenses').innerText = `Ksh ${totalExp.toLocaleString()}`;
-            document.getElementById('dashTxCount').innerText = todaySales.length;
-            document.getElementById('dashServiceCount').innerText = state.services.length;
-        }
+            document.getElementById('dashTotalSales').innerText = `KSh ${totalSales.toLocaleString()}`;
+            document.getElementById('dashCashSales').innerText = `KSh ${cashSales.toLocaleString()}`;
+            document.getElementById('dashMpesaSales').innerText = `KSh ${mpesaSales.toLocaleString()}`;
+            document.getElementById('dashReceiptsCount').innerText = salesData.length;
 
-        // 2. SALES LEDGER & NEW SALE FORM
-        function openNewSaleModal() {
-            populateServiceDropdown();
-            document.getElementById('saleQty').value = 1;
-            document.getElementById('saleUnitPrice').value = '';
-            document.getElementById('saleTotalBilled').value = '';
-            document.getElementById('saleAmountPaid').value = '';
-            document.getElementById('newSaleModal').classList.remove('hidden');
-        }
+            document.getElementById('dashBreakdownCash').innerText = `KSh ${cashSales.toLocaleString()}`;
+            document.getElementById('dashBreakdownMpesa').innerText = `KSh ${mpesaSales.toLocaleString()}`;
 
-        function populateServiceDropdown() {
-            const sel = document.getElementById('saleItemSelect');
-            sel.innerHTML = '<option value="">-- Select Service Item --</option>';
-            state.services.forEach(s => {
-                sel.innerHTML += `<option value="${s.id}" data-price="${s.price}">${s.name} (Ksh ${s.price})</option>`;
+            const chartContainer = document.getElementById('dashServiceChartContainer');
+            if (salesData.length === 0) {
+                chartContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">No sales recorded yet. Use the Sales Ledger tab to record a sale.</p>`;
+                return;
+            }
+
+            let html = '';
+            salesData.forEach(sale => {
+                html += `
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center text-xs">
+                        <div>
+                            <span class="font-bold text-slate-800">${sale.service}</span>
+                            <span class="text-slate-400 ml-2">(${sale.id})</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-bold text-indigo-600">KSh ${sale.total.toLocaleString()}</span>
+                            <span class="block text-[10px] text-slate-400">${sale.mode} • Qty: ${sale.qty}</span>
+                        </div>
+                    </div>
+                `;
             });
+            chartContainer.innerHTML = html;
         }
 
-        function onSaleItemSelected() {
-            const sel = document.getElementById('saleItemSelect');
-            const opt = sel.options[sel.selectedIndex];
-            const price = opt.getAttribute('data-price') || 0;
+        // Sales Ledger & Restored Modal Handling
+        function renderSalesTable() {
+            const tbody = document.getElementById('salesTableBody');
+            let html = '';
+            salesData.forEach((sale, index) => {
+                html += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="p-4 font-bold text-slate-700">${sale.id}</td>
+                        <td class="p-4 text-slate-500">${sale.date}</td>
+                        <td class="p-4 font-medium text-slate-800">${sale.service}</td>
+                        <td class="p-4">${sale.qty}</td>
+                        <td class="p-4 font-bold text-indigo-600">KSh ${sale.total.toLocaleString()}</td>
+                        <td class="p-4"><span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-md font-semibold text-[10px]">${sale.mode}</span></td>
+                        <td class="p-4 text-right">
+                            <button onclick="deleteSale(${index})" class="text-red-500 hover:text-red-700 font-semibold text-xs">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html || `<tr><td colspan="7" class="text-center py-6 text-slate-400">No sales recorded yet.</td></tr>`;
+        }
+
+        function openSaleModal() {
+            activeModalType = 'sale';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = 'Record New Sale';
+            
+            let serviceOptions = servicesData.map(s => `<option value="${s.name}" data-price="${s.price}">${s.name} (KSh ${s.price})</option>`).join('');
+
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">SELECT SERVICE / ITEM</label>
+                        <select id="saleService" onchange="onSaleServiceChange()" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-indigo-500">
+                            ${serviceOptions}
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">QUANTITY</label>
+                            <input type="number" id="saleQty" value="1" min="1" oninput="calculateSaleTotal()" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">UNIT PRICE (KSH)</label>
+                            <input type="number" id="saleUnitPrice" value="0" min="0" oninput="calculateSaleTotal()" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">TOTAL BILLED AMOUNT (KSH)</label>
+                        <input type="number" id="saleTotal" value="0" readonly class="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 cursor-not-allowed">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">PAYMENT MODE</label>
+                        <select id="saleMode" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800">
+                            <option value="Cash">Cash</option>
+                            <option value="M-Pesa">M-Pesa</option>
+                        </select>
+                    </div>
+
+                    <div class="flex justify-end items-center space-x-3 pt-4 border-t border-slate-100 mt-6">
+                        <button type="button" onclick="closeModal()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition">Cancel</button>
+                        <button type="button" onclick="handleSaveSale()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition">Save Sale & Print Receipt</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+            onSaleServiceChange();
+        }
+
+        function onSaleServiceChange() {
+            const select = document.getElementById('saleService');
+            const selectedOpt = select.options[select.selectedIndex];
+            const price = selectedOpt ? parseFloat(selectedOpt.getAttribute('data-price')) || 0 : 0;
             document.getElementById('saleUnitPrice').value = price;
             calculateSaleTotal();
         }
 
         function calculateSaleTotal() {
             const qty = parseFloat(document.getElementById('saleQty').value) || 0;
-            const price = parseFloat(document.getElementById('saleUnitPrice').value) || 0;
-            const total = qty * price;
-            document.getElementById('saleTotalBilled').value = total;
-            document.getElementById('saleAmountPaid').value = total; // Auto match default
+            const unitPrice = parseFloat(document.getElementById('saleUnitPrice').value) || 0;
+            document.getElementById('saleTotal').value = qty * unitPrice;
         }
 
-        function submitNewSale(e) {
-            e.preventDefault();
-            const sel = document.getElementById('saleItemSelect');
-            const opt = sel.options[sel.selectedIndex];
-            if (!opt.value) return;
+        function handleSaveSale() {
+            const serviceName = document.getElementById('saleService').value;
+            const qty = parseInt(document.getElementById('saleQty').value) || 1;
+            const total = parseFloat(document.getElementById('saleTotal').value) || 0;
+            const mode = document.getElementById('saleMode').value;
+
+            // Automatically deduct inventory if mapped item exists
+            const matchedService = servicesData.find(s => s.name === serviceName);
+            if (matchedService && matchedService.mappedItem && matchedService.mappedItem !== 'None') {
+                const invItem = inventoryData.find(i => i.name === matchedService.mappedItem);
+                if (invItem) {
+                    // Deduct from loose first, then packs if necessary
+                    let remainingDeduction = qty;
+                    if (invItem.loose >= remainingDeduction) {
+                        invItem.loose -= remainingDeduction;
+                    } else {
+                        remainingDeduction -= invItem.loose;
+                        invItem.loose = 0;
+                        while (remainingDeduction > 0 && invItem.packs > 0) {
+                            invItem.packs -= 1;
+                            invItem.loose += (500 - remainingDeduction); // standard pack size or remainder
+                            remainingDeduction = 0;
+                        }
+                    }
+                    localStorage.setItem('cyber_inventory', JSON.stringify(inventoryData));
+                }
+            }
 
             const newSale = {
-                id: 'RCP-' + Math.floor(1000 + Math.random() * 9000),
-                date: new Date().toISOString().split('T')[0],
-                itemName: opt.text.split(' (Ksh')[0],
-                qty: parseInt(document.getElementById('saleQty').value),
-                totalBilled: parseFloat(document.getElementById('saleTotalBilled').value),
-                mode: document.getElementById('salePaymentMode').value,
-                paid: parseFloat(document.getElementById('saleAmountPaid').value),
-                status: 'Completed'
+                id: `REC-${Math.floor(1000 + Math.random() * 9000)}`,
+                date: new Date().toISOString().slice(0, 16).replace('T', ' '),
+                service: serviceName,
+                qty: qty,
+                total: total,
+                mode: mode
             };
 
-            state.sales.unshift(newSale);
-            saveState();
-            renderSales();
+            salesData.unshift(newSale);
+            localStorage.setItem('cyber_sales', JSON.stringify(salesData));
+            closeModal();
+            renderSalesTable();
             renderDashboard();
-            closeModal('newSaleModal');
         }
 
-        function renderSales() {
-            const tbody = document.getElementById('salesTableBody');
-            tbody.innerHTML = '';
-            state.sales.forEach((s, idx) => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="py-4 px-6 font-mono font-semibold text-blue-600">${s.id}</td>
-                        <td class="py-4 px-6 text-slate-500">${s.date}</td>
-                        <td class="py-4 px-6 font-medium text-slate-900">${s.itemName}</td>
-                        <td class="py-4 px-6 text-slate-600">${s.qty}</td>
-                        <td class="py-4 px-6 font-bold text-slate-900">Ksh ${s.totalBilled.toLocaleString()}</td>
-                        <td class="py-4 px-6"><span class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-semibold">${s.mode}</span></td>
-                        <td class="py-4 px-6"><span class="px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-full text-xs font-semibold">${s.status}</span></td>
-                        <td class="py-4 px-6 text-right">
-                            <button onclick="deleteSale(${idx})" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
+        function deleteSale(index) {
+            salesData.splice(index, 1);
+            localStorage.setItem('cyber_sales', JSON.stringify(salesData));
+            renderSalesTable();
+            renderDashboard();
+        }
+
+        // Expenses Ledger & Modal Handling
+        function renderExpensesTable() {
+            const tbody = document.getElementById('expensesTableBody');
+            let html = '';
+            expensesData.forEach((exp, index) => {
+                html += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="p-4 text-slate-500">${exp.date}</td>
+                        <td class="p-4 font-bold text-slate-800">${exp.particular}</td>
+                        <td class="p-4"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-md font-semibold text-[10px]">${exp.category}</span></td>
+                        <td class="p-4 font-bold text-rose-600">KSh ${exp.amount.toLocaleString()}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="deleteExpense(${index})" class="text-red-500 hover:text-red-700 font-semibold text-xs">Delete</button>
                         </td>
                     </tr>
                 `;
             });
+            tbody.innerHTML = html || `<tr><td colspan="5" class="text-center py-6 text-slate-400">No expenses recorded yet.</td></tr>`;
         }
 
-        function deleteSale(idx) {
-            if (confirm('Delete this transaction record?')) {
-                state.sales.splice(idx, 1);
-                saveState();
-                renderSales();
-                renderDashboard();
+        function openExpenseModal() {
+            activeModalType = 'expense';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = 'Log Operational Expense';
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Particular / Description</label>
+                        <input type="text" id="expParticular" placeholder="e.g. Electricity Token" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+                        <select id="expCategory" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                            <option value="Utilities">Utilities</option>
+                            <option value="Supplies">Supplies</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="General">General</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Amount (KSh)</label>
+                        <input type="number" id="expAmount" placeholder="e.g. 1000" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="button" onclick="handleSaveExpense()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl hover:bg-indigo-700 transition">Save Expense</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function handleSaveExpense() {
+            const particular = document.getElementById('expParticular').value;
+            const category = document.getElementById('expCategory').value;
+            const amount = parseFloat(document.getElementById('expAmount').value) || 0;
+
+            if (!particular || !amount) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            const newExpense = {
+                id: `EXP-${Math.floor(100 + Math.random() * 900)}`,
+                date: new Date().toISOString().slice(0, 10),
+                particular: particular,
+                category: category,
+                amount: amount
+            };
+
+            expensesData.unshift(newExpense);
+            localStorage.setItem('cyber_expenses', JSON.stringify(expensesData));
+            closeModal();
+            renderExpensesTable();
+        }
+
+        function deleteExpense(index) {
+            expensesData.splice(index, 1);
+            localStorage.setItem('cyber_expenses', JSON.stringify(expensesData));
+            renderExpensesTable();
+        }
+
+        // Services Directory Rendering
+        function renderServicesTable() {
+            const tbody = document.getElementById('servicesTableBody');
+            const search = document.getElementById('serviceSearchInput').value.toLowerCase();
+            let html = '';
+            servicesData.filter(s => s.name.toLowerCase().includes(search) || s.type.toLowerCase().includes(search)).forEach((srv, index) => {
+                html += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="p-4 font-semibold text-slate-600">${srv.type}</td>
+                        <td class="p-4 font-bold text-slate-800">${srv.name}</td>
+                        <td class="p-4 text-slate-500">${srv.mappedItem}</td>
+                        <td class="p-4 font-bold text-indigo-600">KSh ${srv.price.toLocaleString()}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="deleteService(${index})" class="text-red-500 hover:text-red-700 font-semibold text-xs">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html || `<tr><td colspan="5" class="text-center py-6 text-slate-400">No services found.</td></tr>`;
+        }
+
+        function openServiceModal() {
+            activeModalType = 'service';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = 'Add New Service';
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Service Type / Category</label>
+                        <input type="text" id="srvType" placeholder="e.g. Document Services" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Service Item Name</label>
+                        <input type="text" id="srvName" placeholder="e.g. Binding" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Mapped Inventory Item</label>
+                        <input type="text" id="srvMapped" placeholder="e.g. Cover Paper" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Price (KSh)</label>
+                        <input type="number" id="srvPrice" placeholder="e.g. 100" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="button" onclick="handleSaveService()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl hover:bg-indigo-700 transition">Save Service</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function handleSaveService() {
+            const type = document.getElementById('srvType').value;
+            const name = document.getElementById('srvName').value;
+            const mappedItem = document.getElementById('srvMapped').value || 'None';
+            const price = parseFloat(document.getElementById('srvPrice').value) || 0;
+
+            if (!type || !name) {
+                alert('Please fill in required fields.');
+                return;
+            }
+
+            servicesData.push({ type, name, mappedItem, price });
+            localStorage.setItem('cyber_services', JSON.stringify(servicesData));
+            closeModal();
+            renderServicesTable();
+        }
+
+        function deleteService(index) {
+            servicesData.splice(index, 1);
+            localStorage.setItem('cyber_services', JSON.stringify(servicesData));
+            renderServicesTable();
+        }
+
+        // Purchases & Inventory Rendering
+        function renderPurchasesTable() {
+            const tbody = document.getElementById('purchasesTableBody');
+            let html = '';
+            purchasesData.forEach(p => {
+                html += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="p-4 text-slate-500">${p.date}</td>
+                        <td class="p-4 font-bold text-slate-800">${p.name}</td>
+                        <td class="p-4"><span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-md text-[10px]">${p.category}</span></td>
+                        <td class="p-4">${p.packs}</td>
+                        <td class="p-4">${p.packQty}</td>
+                        <td class="p-4">KSh ${p.unitPrice.toLocaleString()}</td>
+                        <td class="p-4 font-bold text-indigo-600 text-right">KSh ${p.total.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html || `<tr><td colspan="7" class="text-center py-6 text-slate-400">No stock purchases recorded.</td></tr>`;
+            document.getElementById('purchasesCountLabel').innerText = `Total: ${purchasesData.length}`;
+        }
+
+        function openPurchaseModal() {
+            activeModalType = 'purchase';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = 'Add Stock Purchase';
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Item Name</label>
+                        <input type="text" id="purName" placeholder="e.g. A4 Paper" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+                        <input type="text" id="purCategory" placeholder="e.g. Printing Consumables" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Number of Packs</label>
+                        <input type="number" id="purPacks" value="1" min="1" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Pack Quantity (Pcs per Pack)</label>
+                        <input type="number" id="purPackQty" value="500" min="1" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Unit Price per Pack (KSh)</label>
+                        <input type="number" id="purUnitPrice" placeholder="e.g. 650" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="button" onclick="handleSavePurchase()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl hover:bg-indigo-700 transition">Save Purchase</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function handleSavePurchase() {
+            const name = document.getElementById('purName').value;
+            const category = document.getElementById('purCategory').value;
+            const packs = parseInt(document.getElementById('purPacks').value) || 1;
+            const packQty = parseInt(document.getElementById('purPackQty').value) || 1;
+            const unitPrice = parseFloat(document.getElementById('purUnitPrice').value) || 0;
+            const total = packs * unitPrice;
+
+            if (!name) {
+                alert('Please enter item name.');
+                return;
+            }
+
+            purchasesData.unshift({
+                date: new Date().toISOString().slice(0, 16).replace('T', ' '),
+                name, category, packs, packQty, unitPrice, total
+            });
+
+            const existingInv = inventoryData.find(i => i.name === name);
+            if (existingInv) {
+                existingInv.packs += packs;
+            } else {
+                inventoryData.push({ name, category, packs, loose: packQty, unitPrice });
+            }
+
+            localStorage.setItem('cyber_purchases', JSON.stringify(purchasesData));
+            localStorage.setItem('cyber_inventory', JSON.stringify(inventoryData));
+            closeModal();
+            renderPurchasesTable();
+        }
+
+        function renderInventoryTable() {
+            const tbody = document.getElementById('inventoryTableBody');
+            let html = '';
+            inventoryData.forEach((inv, index) => {
+                html += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="p-4 font-bold text-slate-800">${inv.name}</td>
+                        <td class="p-4"><span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-md text-[10px]">${inv.category}</span></td>
+                        <td class="p-4 font-semibold text-emerald-600">${inv.packs}</td>
+                        <td class="p-4">${inv.loose}</td>
+                        <td class="p-4">KSh ${inv.unitPrice.toLocaleString()}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="openInventoryEditModal(${index})" class="px-3 py-1 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-semibold text-xs rounded-lg transition">Edit Price/Stock</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html || `<tr><td colspan="6" class="text-center py-6 text-slate-400">No inventory balances found.</td></tr>`;
+        }
+
+        function openInventoryEditModal(index) {
+            const inv = inventoryData[index];
+            activeModalType = 'editInventory';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = `Edit Stock: ${inv.name}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Packs Available</label>
+                        <input type="number" id="editInvPacks" value="${inv.packs}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Loose Pieces Available</label>
+                        <input type="number" id="editInvLoose" value="${inv.loose}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Unit Price (KSh)</label>
+                        <input type="number" id="editInvPrice" value="${inv.unitPrice}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="button" onclick="saveInventoryEdit(${index})" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl hover:bg-indigo-700 transition">Update Stock</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function saveInventoryEdit(index) {
+            inventoryData[index].packs = parseInt(document.getElementById('editInvPacks').value) || 0;
+            inventoryData[index].loose = parseInt(document.getElementById('editInvLoose').value) || 0;
+            inventoryData[index].unitPrice = parseFloat(document.getElementById('editInvPrice').value) || 0;
+
+            localStorage.setItem('cyber_inventory', JSON.stringify(inventoryData));
+            closeModal();
+            renderInventoryTable();
+        }
+
+        // Reports View & Modal
+        function renderReportsView() {
+            const totalSales = salesData.reduce((acc, curr) => acc + curr.total, 0);
+            const totalExpenses = expensesData.reduce((acc, curr) => acc + curr.amount, 0);
+            const netProfit = totalSales - totalExpenses;
+
+            const container = document.getElementById('reportsSummaryCard');
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-xs font-bold text-slate-500 uppercase">Gross Revenue</p>
+                        <p class="text-xl font-bold text-slate-900 mt-1">KSh ${totalSales.toLocaleString()}</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-xs font-bold text-slate-500 uppercase">Total Expenses</p>
+                        <p class="text-xl font-bold text-rose-600 mt-1">KSh ${totalExpenses.toLocaleString()}</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-xs font-bold text-slate-500 uppercase">Net Profit</p>
+                        <p class="text-xl font-bold text-emerald-600 mt-1">KSh ${netProfit.toLocaleString()}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openReportsModal() {
+            const totalSales = salesData.reduce((acc, curr) => acc + curr.total, 0);
+            const totalExpenses = expensesData.reduce((acc, curr) => acc + curr.amount, 0);
+            const netProfit = totalSales - totalExpenses;
+
+            activeModalType = 'reports';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = `${businessName} - Financial P&L Statement`;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4 text-xs">
+                    <div class="p-4 bg-slate-50 rounded-xl space-y-2">
+                        <p class="font-bold text-slate-700">Statement Period: All Time Live Summary</p>
+                        <div class="flex justify-between py-1 border-b">
+                            <span>Total Gross Collections:</span>
+                            <span class="font-bold text-indigo-600">KSh ${totalSales.toLocaleString()}</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b">
+                            <span>Total Operational Expenses:</span>
+                            <span class="font-bold text-rose-600">KSh ${totalExpenses.toLocaleString()}</span>
+                        </div>
+                        <div class="flex justify-between py-1 font-bold text-sm">
+                            <span>Net Operating Income:</span>
+                            <span class="text-emerald-600">KSh ${netProfit.toLocaleString()}</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-end pt-2">
+                        <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 text-white rounded-xl font-semibold">Close Report</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        // Settings Manager Modal
+        function openSettingsManagerModal() {
+            activeModalType = 'settingsManager';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = 'Configure Business Name';
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Business Name / Brand</label>
+                        <input type="text" id="settingBusinessName" value="${businessName}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="button" onclick="saveBusinessSettings()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl hover:bg-indigo-700 transition">Save Settings</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function saveBusinessSettings() {
+            const val = document.getElementById('settingBusinessName').value.trim();
+            if (val) {
+                businessName = val;
+                localStorage.setItem('cyber_brand_name', businessName);
+                applyBrandName();
+                closeModal();
+                alert('Business name updated successfully!');
             }
         }
 
-        // 3. SERVICE DIRECTORY
-        function openServiceModal() { document.getElementById('serviceModal').classList.remove('hidden'); }
-        function submitNewService(e) {
-            e.preventDefault();
-            state.services.push({
-                id: Date.now(),
-                name: document.getElementById('srvName').value,
-                category: document.getElementById('srvCategory').value,
-                price: parseFloat(document.getElementById('srvPrice').value)
+        // Batch Upload Center Logic
+        function processCentralizedBatchUpload() {
+            const target = document.getElementById('batchUploadTarget').value;
+            const textContent = document.getElementById('batchUploadText').value.trim();
+
+            if (!textContent) {
+                alert('Please paste or upload valid CSV rows before saving.');
+                return;
+            }
+
+            const rows = textContent.split('\n');
+            let addedCount = 0;
+
+            rows.forEach(row => {
+                const cols = row.split('|').map(c => c.trim());
+                if (target === 'services' && cols.length >= 4) {
+                    servicesData.push({ type: cols[0], name: cols[1], mappedItem: cols[2], price: parseFloat(cols[3]) || 0 });
+                    addedCount++;
+                } else if (target === 'inventory' && cols.length >= 5) {
+                    inventoryData.push({ name: cols[0], category: cols[1], packs: parseInt(cols[2]) || 0, loose: parseInt(cols[3]) || 0, unitPrice: parseFloat(cols[4]) || 0 });
+                    addedCount++;
+                }
             });
-            saveState();
-            renderServices();
-            renderDashboard();
-            closeModal('serviceModal');
-        }
-        function renderServices() {
-            const tbody = document.getElementById('servicesTableBody');
-            tbody.innerHTML = '';
-            state.services.forEach((s, idx) => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="py-4 px-6 font-medium text-slate-900">${s.name}</td>
-                        <td class="py-4 px-6 text-slate-500">${s.category}</td>
-                        <td class="py-4 px-6 font-bold text-slate-900">Ksh ${s.price.toLocaleString()}</td>
-                        <td class="py-4 px-6 text-right">
-                            <button onclick="deleteService(${idx})" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-        function deleteService(idx) {
-            state.services.splice(idx, 1);
-            saveState();
-            renderServices();
-            renderDashboard();
+
+            if (target === 'services') localStorage.setItem('cyber_services', JSON.stringify(servicesData));
+            if (target === 'inventory') localStorage.setItem('cyber_inventory', JSON.stringify(inventoryData));
+
+            alert(`Successfully added ${addedCount} batch items to ${target}!`);
+            document.getElementById('batchUploadText').value = '';
+            switchTab(target);
         }
 
-        // 4. PURCHASES
-        function openPurchaseModal() { document.getElementById('purchaseModal').classList.remove('hidden'); }
-        function submitNewPurchase(e) {
-            e.preventDefault();
-            state.purchases.push({
-                id: Date.now(),
-                date: new Date().toISOString().split('T')[0],
-                item: document.getElementById('purItem').value,
-                supplier: document.getElementById('purSupplier').value,
-                qty: parseInt(document.getElementById('purQty').value),
-                cost: parseFloat(document.getElementById('purCost').value)
-            });
-            saveState();
-            renderPurchases();
-            closeModal('purchaseModal');
-        }
-        function renderPurchases() {
-            const tbody = document.getElementById('purchasesTableBody');
-            tbody.innerHTML = '';
-            state.purchases.forEach((p, idx) => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="py-4 px-6 text-slate-500">${p.date}</td>
-                        <td class="py-4 px-6 font-medium text-slate-900">${p.item}</td>
-                        <td class="py-4 px-6 text-slate-600">${p.supplier}</td>
-                        <td class="py-4 px-6 text-slate-600">${p.qty}</td>
-                        <td class="py-4 px-6 font-bold text-slate-900">Ksh ${p.cost.toLocaleString()}</td>
-                        <td class="py-4 px-6 text-right">
-                            <button onclick="deletePurchase(${idx})" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-        function deletePurchase(idx) {
-            state.purchases.splice(idx, 1);
-            saveState();
-            renderPurchases();
+        function closeModal() {
+            document.getElementById('universalModal').classList.add('hidden');
+            activeModalType = null;
         }
 
-        // 5. EXPENSES
-        function openExpenseModal() { document.getElementById('expenseModal').classList.remove('hidden'); }
-        function submitNewExpense(e) {
-            e.preventDefault();
-            state.expenses.push({
-                id: Date.now(),
-                date: new Date().toISOString().split('T')[0],
-                title: document.getElementById('expTitle').value,
-                category: document.getElementById('expCategory').value,
-                amount: parseFloat(document.getElementById('expAmount').value)
-            });
-            saveState();
-            renderExpenses();
-            renderDashboard();
-            closeModal('expenseModal');
-        }
-        function renderExpenses() {
-            const tbody = document.getElementById('expensesTableBody');
-            tbody.innerHTML = '';
-            state.expenses.forEach((ex, idx) => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="py-4 px-6 text-slate-500">${ex.date}</td>
-                        <td class="py-4 px-6 font-medium text-slate-900">${ex.title}</td>
-                        <td class="py-4 px-6 text-slate-600">${ex.category}</td>
-                        <td class="py-4 px-6 font-bold text-rose-600">Ksh ${ex.amount.toLocaleString()}</td>
-                        <td class="py-4 px-6 text-right">
-                            <button onclick="deleteExpense(${idx})" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-        function deleteExpense(idx) {
-            state.expenses.splice(idx, 1);
-            saveState();
-            renderExpenses();
-            renderDashboard();
-        }
-
-        // 6. REPORTS & EXPORTS
-        function exportReportXLS() {
-            let csv = 'Receipt ID,Date,Item Name,Quantity,Total Billed,Payment Mode,Status\n';
-            state.sales.forEach(s => {
-                csv += `"${s.id}","${s.date}","${s.itemName}",${s.qty},${s.totalBilled},"${s.mode}","${s.status}"\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `CyberCafe_Sales_Report_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-        }
-
-        function printReportPDF() {
-            window.print();
-        }
-
-        // 7. SETTINGS & USERS
-        function renderSettings() {
-            const list = document.getElementById('userManagementList');
-            list.innerHTML = '';
-            state.users.forEach(u => {
-                list.innerHTML += `
-                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
-                        <div>
-                            <p class="font-bold text-slate-900">${u.name}</p>
-                            <p class="text-xs text-slate-500">Username: <span class="font-mono">${u.username}</span></p>
-                        </div>
-                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold uppercase">${u.role}</span>
-                    </div>
-                `;
-            });
+        function resetAllData() {
+            if (confirm('Are you sure you want to reset all records and clear cache?')) {
+                localStorage.clear();
+                location.reload();
+            }
         }
     </script>
 </body>
