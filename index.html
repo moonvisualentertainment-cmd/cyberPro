@@ -97,7 +97,7 @@
                         <span>Sales Ledger</span>
                     </button>
 
-                    <p class="px-3 pt-6 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Administration</p>
+                    <p id="adminNavHeading" class="px-3 pt-6 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Administration</p>
                     <button onclick="switchTab('reports')" id="nav-reports" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
                         <span>Reports</span>
                     </button>
@@ -147,6 +147,16 @@
 
                 <!-- 1. DASHBOARD TAB -->
                 <div id="tab-dashboard" class="tab-content space-y-6">
+                    <!-- Quick Links -->
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center gap-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-2">Quick Links</span>
+                        <button data-needs="sales" onclick="openSaleModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition">
+                            + Record Sale
+                        </button>
+                        <button data-needs="expenses" onclick="openExpenseModal()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-rose-600/30 transition">
+                            + Log Expense
+                        </button>
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
                             <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Today's Sales</p>
@@ -219,10 +229,10 @@
                             <p class="text-xs text-slate-500">Manage service pricing, mapped inventory deduction items, and catalog items.</p>
                         </div>
                         <div class="flex items-center space-x-3 w-full md:w-auto">
-                            <button onclick="switchTab('batchUpload')" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow transition whitespace-nowrap">
+                            <button data-needs="batchUpload" onclick="switchTab('batchUpload')" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow transition whitespace-nowrap">
                                 📦 + Batch Upload Center
                             </button>
-                            <button onclick="openServiceModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition whitespace-nowrap">
+                            <button data-needs="services:edit" onclick="openServiceModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition whitespace-nowrap">
                                 + Add New Service
                             </button>
                         </div>
@@ -300,7 +310,7 @@
                             <h3 class="font-bold text-slate-900">Inventory & Stock Balances</h3>
                             <p class="text-xs text-slate-500">Overview of current stock balances in store (Packs & Loose Available) with price adjustment support.</p>
                         </div>
-                        <button onclick="openInventoryItemModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow transition">
+                        <button data-needs="inventory:edit" onclick="openInventoryItemModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow transition">
                             + Add Inventory Item
                         </button>
                     </div>
@@ -387,7 +397,7 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
-                                    <th class="p-4">Date</th>
+                                    <th class="p-4">Date / Time</th>
                                     <th class="p-4">Particular</th>
                                     <th class="p-4">Category</th>
                                     <th class="p-4">Amount (KSH)</th>
@@ -426,7 +436,7 @@
                             <thead>
                                 <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
                                     <th class="p-4">Receipt #</th>
-                                    <th class="p-4">Date</th>
+                                    <th class="p-4">Date / Time</th>
                                     <th class="p-4">Service Name</th>
                                     <th class="p-4">Qty</th>
                                     <th class="p-4">Total Billed</th>
@@ -452,8 +462,61 @@
                             Generate Full P&L Statement 📊
                         </button>
                     </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-end gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Period</label>
+                            <select id="reportPeriod" onchange="onReportPeriodChange()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Time</option>
+                                <option value="today">Today</option>
+                                <option value="yesterday">Yesterday</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="30days">Last 30 Days</option>
+                                <option value="3months">Last 3 Months</option>
+                                <option value="custom">Custom Date / Range</option>
+                            </select>
+                        </div>
+                        <div id="reportCustomWrap" class="hidden flex flex-wrap items-end gap-3">
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">From</label>
+                                <input type="date" id="reportFrom" onchange="renderReportsView()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">To</label>
+                                <input type="date" id="reportTo" onchange="renderReportsView()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700">
+                            </div>
+                            <p class="text-[11px] text-slate-400 pb-2">Pick the same day in both boxes to view a single date.</p>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Show</label>
+                            <select id="reportType" onchange="renderReportsView()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Transactions</option>
+                                <option value="sale">Sales only</option>
+                                <option value="expense">Expenses only</option>
+                                <option value="purchase">Stock Purchases only</option>
+                            </select>
+                        </div>
+                    </div>
                     <div id="reportsSummaryCard" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
                         <!-- Populated by JS -->
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                            <h3 class="font-bold text-slate-900 text-sm">Transactions</h3>
+                            <span class="text-xs font-semibold text-slate-500" id="reportTxCount">0 transactions</span>
+                        </div>
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Date / Time</th>
+                                    <th class="p-4">Type</th>
+                                    <th class="p-4">Details</th>
+                                    <th class="p-4">Mode / Category</th>
+                                    <th class="p-4 text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportTxBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -544,6 +607,114 @@
 
         let activeModalType = null;
 
+        // ==================== ROLE PERMISSIONS ====================
+        // 'full' = view + add/edit/delete, 'view' = read only, missing = no access
+        const ROLE_ACCESS = {
+            Admin: { dashboard: 'full', services: 'full', sales: 'full', expenses: 'full', purchases: 'full',
+                     inventory: 'full', batchUpload: 'full', reports: 'full', settings: 'full' },
+            Staff: { dashboard: 'full', services: 'view', sales: 'full', expenses: 'full', inventory: 'view' }
+        };
+        function accessLevel(tab) { return (ROLE_ACCESS[currentUser?.role] || {})[tab] || null; }
+        function canView(tab) { return !!accessLevel(tab); }
+        function canEdit(tab) { return accessLevel(tab) === 'full'; }
+
+        // Hide menu items / buttons the current role may not use
+        function applyRoleAccess() {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.toggle('hidden', !canView(btn.id.replace('nav-', '')));
+            });
+            const adminVisible = canView('reports') || canView('settings');
+            document.getElementById('adminNavHeading').classList.toggle('hidden', !adminVisible);
+            document.querySelectorAll('[data-needs]').forEach(el => {
+                const [tab, mode] = el.dataset.needs.split(':');
+                el.classList.toggle('hidden', !(mode === 'edit' ? canEdit(tab) : canView(tab)));
+            });
+        }
+
+        // ==================== DATE & TIME HELPERS (Nairobi, EAT = UTC+3) ====================
+        // All timestamps are taken in Africa/Nairobi time, no matter what timezone the device is set to.
+        const APP_TZ = 'Africa/Nairobi';
+        const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const pad2 = n => String(n).padStart(2, '0');
+
+        function nairobiParts(d = new Date()) {
+            const parts = new Intl.DateTimeFormat('en-GB', {
+                timeZone: APP_TZ, hourCycle: 'h23',
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            }).formatToParts(d).reduce((o, p) => (o[p.type] = p.value, o), {});
+            return { y: +parts.year, mo: +parts.month, d: +parts.day, h: +parts.hour, mi: +parts.minute, s: +parts.second };
+        }
+
+        // Current Nairobi time as "YYYY-MM-DD HH:mm:ss"
+        function nowStamp() {
+            const p = nairobiParts();
+            return `${p.y}-${pad2(p.mo)}-${pad2(p.d)} ${pad2(p.h)}:${pad2(p.mi)}:${pad2(p.s)}`;
+        }
+
+        // Parse "YYYY-MM-DD" or "YYYY-MM-DD HH:mm[:ss]" -> comparable ms value (Nairobi wall-clock)
+        function parseStamp(str) {
+            const m = /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/.exec(str || '');
+            if (!m) return NaN;
+            return Date.UTC(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
+        }
+
+        function nowWallMs() {
+            const p = nairobiParts();
+            return Date.UTC(p.y, p.mo - 1, p.d, p.h, p.mi, p.s);
+        }
+
+        // "2026-09-30 09:15:20" -> "30 Sep 2026, 9:15 AM"  (date-only values show just the date)
+        function formatStamp(str) {
+            const m = /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/.exec(str || '');
+            if (!m) return str || '';
+            const datePart = `${+m[3]} ${MONTHS[+m[2] - 1]} ${m[1]}`;
+            if (m[4] === undefined) return datePart;
+            const h = +m[4];
+            return `${datePart}, ${h % 12 || 12}:${m[5]} ${h < 12 ? 'AM' : 'PM'}`;
+        }
+
+        function todayKey() { return nowStamp().slice(0, 10); }
+        function isToday(str) { return (str || '').slice(0, 10) === todayKey(); }
+
+        // Period filter used by the Sales, Expenses and Purchases tabs
+        function inPeriod(str, period) {
+            if (!period || period === 'all') return true;
+            const t = parseStamp(str);
+            if (isNaN(t)) return true;
+            const now = new Date(nowWallMs());
+            const DAY = 86400000;
+            if (period === 'today') return str.slice(0, 10) === todayKey();
+            if (period === 'yesterday') return str.slice(0, 10) === new Date(nowWallMs() - DAY).toISOString().slice(0, 10);
+            if (period === 'week') {            // week starts on Monday
+                const dow = (now.getUTCDay() + 6) % 7;
+                const start = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - dow * DAY;
+                return t >= start && t <= now.getTime();
+            }
+            if (period === 'month') {
+                const d = new Date(t);
+                return d.getUTCFullYear() === now.getUTCFullYear() && d.getUTCMonth() === now.getUTCMonth();
+            }
+            if (period === '30days') return t >= now.getTime() - 30 * DAY && t <= now.getTime();
+            if (period === '3months') {
+                const start = Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 3, now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes());
+                return t >= start && t <= now.getTime();
+            }
+            return true;
+        }
+
+        // Live date + clock in the page header
+        function updateClock() {
+            const el = document.getElementById('currentDateDisplay');
+            if (!el) return;
+            const p = nairobiParts();
+            const dow = DAYS[new Date(Date.UTC(p.y, p.mo - 1, p.d)).getUTCDay()];
+            el.innerText = `${dow}, ${p.d} ${MONTHS[p.mo - 1]} ${p.y} • ${p.h % 12 || 12}:${pad2(p.mi)}:${pad2(p.s)} ${p.h < 12 ? 'AM' : 'PM'} EAT`;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
         // Lifecycle & Initialization
         window.addEventListener('DOMContentLoaded', () => {
             applyBrandName();
@@ -591,11 +762,13 @@
             document.getElementById('appSection').classList.remove('hidden');
             document.getElementById('userRoleTitle').innerText = `Manager: ${currentUser.role}`;
             document.getElementById('userAvatarInitials').innerText = currentUser.role === 'Admin' ? 'AD' : 'ST';
+            applyRoleAccess();
             switchTab('dashboard');
         }
 
         // Navigation Switching
         function switchTab(tabId) {
+            if (!canView(tabId)) tabId = 'dashboard';   // role has no access to this section
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.nav-btn').forEach(el => {
                 el.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
@@ -621,26 +794,27 @@
 
         // Dashboard Metrics Calculation & Rendering
         function renderDashboard() {
-            const totalSales = salesData.reduce((acc, curr) => acc + curr.total, 0);
-            const cashSales = salesData.filter(s => s.mode === 'Cash').reduce((acc, curr) => acc + curr.total, 0);
-            const mpesaSales = salesData.filter(s => s.mode === 'M-Pesa').reduce((acc, curr) => acc + curr.total, 0);
+            const todaysSales = salesData.filter(s => isToday(s.date));
+            const totalSales = todaysSales.reduce((acc, curr) => acc + curr.total, 0);
+            const cashSales = todaysSales.filter(s => s.mode === 'Cash').reduce((acc, curr) => acc + curr.total, 0);
+            const mpesaSales = todaysSales.filter(s => s.mode === 'M-Pesa').reduce((acc, curr) => acc + curr.total, 0);
 
             document.getElementById('dashTotalSales').innerText = `KSh ${totalSales.toLocaleString()}`;
             document.getElementById('dashCashSales').innerText = `KSh ${cashSales.toLocaleString()}`;
             document.getElementById('dashMpesaSales').innerText = `KSh ${mpesaSales.toLocaleString()}`;
-            document.getElementById('dashReceiptsCount').innerText = salesData.length;
+            document.getElementById('dashReceiptsCount').innerText = todaysSales.length;
 
             document.getElementById('dashBreakdownCash').innerText = `KSh ${cashSales.toLocaleString()}`;
             document.getElementById('dashBreakdownMpesa').innerText = `KSh ${mpesaSales.toLocaleString()}`;
 
             const chartContainer = document.getElementById('dashServiceChartContainer');
-            if (salesData.length === 0) {
-                chartContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">No sales recorded yet. Use the Sales Ledger tab to record a sale.</p>`;
+            if (todaysSales.length === 0) {
+                chartContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">No sales recorded today yet. Use the Sales Ledger tab to record a sale.</p>`;
                 return;
             }
 
             let html = '';
-            salesData.forEach(sale => {
+            todaysSales.forEach(sale => {
                 html += `
                     <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center text-xs">
                         <div>
@@ -649,7 +823,7 @@
                         </div>
                         <div class="text-right">
                             <span class="font-bold text-indigo-600">KSh ${sale.total.toLocaleString()}</span>
-                            <span class="block text-[10px] text-slate-400">${sale.mode} • Qty: ${sale.qty}</span>
+                            <span class="block text-[10px] text-slate-400">${sale.mode} • Qty: ${sale.qty} • ${formatStamp(sale.date).split(", ")[1] || ""}</span>
                         </div>
                     </div>
                 `;
@@ -661,11 +835,13 @@
         function renderSalesTable() {
             const tbody = document.getElementById('salesTableBody');
             let html = '';
+            const period = document.getElementById('salesPeriodFilter')?.value || 'all';
             salesData.forEach((sale, index) => {
+                if (!inPeriod(sale.date, period)) return;
                 html += `
                     <tr class="hover:bg-slate-50/50">
                         <td class="p-4 font-bold text-slate-700">${sale.id}</td>
-                        <td class="p-4 text-slate-500">${sale.date}</td>
+                        <td class="p-4 text-slate-500 whitespace-nowrap">${formatStamp(sale.date)}</td>
                         <td class="p-4 font-medium text-slate-800">${sale.service}</td>
                         <td class="p-4">${sale.qty}</td>
                         <td class="p-4 font-bold text-indigo-600">KSh ${sale.total.toLocaleString()}</td>
@@ -772,7 +948,7 @@
 
             const newSale = {
                 id: `REC-${Math.floor(1000 + Math.random() * 9000)}`,
-                date: new Date().toISOString().slice(0, 16).replace('T', ' '),
+                date: nowStamp(),
                 service: serviceName,
                 qty: qty,
                 total: total,
@@ -797,10 +973,12 @@
         function renderExpensesTable() {
             const tbody = document.getElementById('expensesTableBody');
             let html = '';
+            const period = document.getElementById('expensesPeriodFilter')?.value || 'all';
             expensesData.forEach((exp, index) => {
+                if (!inPeriod(exp.date, period)) return;
                 html += `
                     <tr class="hover:bg-slate-50/50">
-                        <td class="p-4 text-slate-500">${exp.date}</td>
+                        <td class="p-4 text-slate-500 whitespace-nowrap">${formatStamp(exp.date)}</td>
                         <td class="p-4 font-bold text-slate-800">${exp.particular}</td>
                         <td class="p-4"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-md font-semibold text-[10px]">${exp.category}</span></td>
                         <td class="p-4 font-bold text-rose-600">KSh ${exp.amount.toLocaleString()}</td>
@@ -856,7 +1034,7 @@
 
             const newExpense = {
                 id: `EXP-${Math.floor(100 + Math.random() * 900)}`,
-                date: new Date().toISOString().slice(0, 10),
+                date: nowStamp(),
                 particular: particular,
                 category: category,
                 amount: amount
@@ -890,8 +1068,9 @@
                         <td class="p-4 text-slate-500">${srv.mappedItem}</td>
                         <td class="p-4 font-bold text-indigo-600">KSh ${srv.price.toLocaleString()}</td>
                         <td class="p-4 text-right space-x-2">
+                            ${!canEdit('services') ? '<span class="text-[10px] text-slate-400">View only</span>' : `
                             <button onclick="openEditServiceModal(${originalIndex})" class="text-indigo-600 hover:text-indigo-800 font-semibold text-xs">Edit</button>
-                            <button onclick="deleteService(${originalIndex})" class="text-red-500 hover:text-red-700 font-semibold text-xs">Delete</button>
+                            <button onclick="deleteService(${originalIndex})" class="text-red-500 hover:text-red-700 font-semibold text-xs">Delete</button>`}
                         </td>
                     </tr>
                 `;
@@ -1010,10 +1189,12 @@
         function renderPurchasesTable() {
             const tbody = document.getElementById('purchasesTableBody');
             let html = '';
-            purchasesData.forEach(p => {
+            const period = document.getElementById('purchasesPeriodFilter')?.value || 'all';
+            const visiblePurchases = purchasesData.filter(p => inPeriod(p.date, period));
+            visiblePurchases.forEach(p => {
                 html += `
                     <tr class="hover:bg-slate-50/50">
-                        <td class="p-4 text-slate-500">${p.date}</td>
+                        <td class="p-4 text-slate-500 whitespace-nowrap">${formatStamp(p.date)}</td>
                         <td class="p-4 font-bold text-slate-800">${p.name}</td>
                         <td class="p-4"><span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-md text-[10px]">${p.category}</span></td>
                         <td class="p-4">${p.packs}</td>
@@ -1024,7 +1205,7 @@
                 `;
             });
             tbody.innerHTML = html || `<tr><td colspan="7" class="text-center py-6 text-slate-400">No stock purchases recorded.</td></tr>`;
-            document.getElementById('purchasesCountLabel').innerText = `Total: ${purchasesData.length}`;
+            document.getElementById('purchasesCountLabel').innerText = `Total: ${visiblePurchases.length}`;
         }
 
         function openPurchaseModal() {
@@ -1075,7 +1256,7 @@
             }
 
             purchasesData.unshift({
-                date: new Date().toISOString().slice(0, 16).replace('T', ' '),
+                date: nowStamp(),
                 name, category, packs, packQty, unitPrice, total
             });
 
@@ -1104,7 +1285,7 @@
                         <td class="p-4">${inv.loose}</td>
                         <td class="p-4">KSh ${inv.unitPrice.toLocaleString()}</td>
                         <td class="p-4 text-right">
-                            <button onclick="openInventoryEditModal(${index})" class="px-3 py-1 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-semibold text-xs rounded-lg transition">Edit Price/Stock</button>
+                            ${canEdit('inventory') ? `<button onclick="openInventoryEditModal(${index})" class="px-3 py-1 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-semibold text-xs rounded-lg transition">Edit Price/Stock</button>` : '<span class="text-[10px] text-slate-400">View only</span>'}
                         </td>
                     </tr>
                 `;
@@ -1202,34 +1383,99 @@
         }
 
         // Reports View & Modal
-        function renderReportsView() {
-            const totalSales = salesData.reduce((acc, curr) => acc + curr.total, 0);
-            const totalExpenses = expensesData.reduce((acc, curr) => acc + curr.amount, 0);
-            const netProfit = totalSales - totalExpenses;
+        // Report filter helpers
+        function onReportPeriodChange() {
+            const custom = document.getElementById('reportPeriod').value === 'custom';
+            document.getElementById('reportCustomWrap').classList.toggle('hidden', !custom);
+            if (custom) {
+                const t = todayKey();
+                const f = document.getElementById('reportFrom'), to = document.getElementById('reportTo');
+                if (!f.value) f.value = t;
+                if (!to.value) to.value = t;
+            }
+            renderReportsView();
+        }
 
-            const container = document.getElementById('reportsSummaryCard');
-            container.innerHTML = `
+        function reportMatches(dateStr) {
+            const period = document.getElementById('reportPeriod')?.value || 'all';
+            if (period !== 'custom') return inPeriod(dateStr, period);
+            let from = document.getElementById('reportFrom').value;
+            let to = document.getElementById('reportTo').value;
+            if (from && to && from > to) [from, to] = [to, from];
+            const key = (dateStr || '').slice(0, 10);
+            return (!from || key >= from) && (!to || key <= to);
+        }
+
+        function reportPeriodLabel() {
+            const sel = document.getElementById('reportPeriod');
+            if (!sel) return 'All Time';
+            if (sel.value !== 'custom') return sel.options[sel.selectedIndex].text;
+            let from = document.getElementById('reportFrom').value, to = document.getElementById('reportTo').value;
+            if (from && to && from > to) [from, to] = [to, from];
+            if (from && from === to) return formatStamp(from);
+            return `${from ? formatStamp(from) : 'Start'} – ${to ? formatStamp(to) : 'Today'}`;
+        }
+
+        function getReportTotals() {
+            const sales = salesData.filter(x => reportMatches(x.date));
+            const expenses = expensesData.filter(x => reportMatches(x.date));
+            const purchases = purchasesData.filter(x => reportMatches(x.date));
+            const totalSales = sales.reduce((a, c) => a + c.total, 0);
+            const totalExpenses = expenses.reduce((a, c) => a + c.amount, 0);
+            return {
+                sales, expenses, purchases, totalSales, totalExpenses,
+                netProfit: totalSales - totalExpenses,
+                cash: sales.filter(x => x.mode === 'Cash').reduce((a, c) => a + c.total, 0),
+                mpesa: sales.filter(x => x.mode === 'M-Pesa').reduce((a, c) => a + c.total, 0),
+                totalPurchases: purchases.reduce((a, c) => a + c.total, 0)
+            };
+        }
+
+        function renderReportsView() {
+            const r = getReportTotals();
+            const type = document.getElementById('reportType')?.value || 'all';
+
+            document.getElementById('reportsSummaryCard').innerHTML = `
+                <p class="text-xs font-bold text-slate-500 uppercase">Period: <span class="text-indigo-600">${reportPeriodLabel()}</span></p>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                     <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
                         <p class="text-xs font-bold text-slate-500 uppercase">Gross Revenue</p>
-                        <p class="text-xl font-bold text-slate-900 mt-1">KSh ${totalSales.toLocaleString()}</p>
+                        <p class="text-xl font-bold text-slate-900 mt-1">KSh ${r.totalSales.toLocaleString()}</p>
+                        <p class="text-[10px] text-slate-400 mt-1">Cash ${r.cash.toLocaleString()} • M-Pesa ${r.mpesa.toLocaleString()}</p>
                     </div>
                     <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
                         <p class="text-xs font-bold text-slate-500 uppercase">Total Expenses</p>
-                        <p class="text-xl font-bold text-rose-600 mt-1">KSh ${totalExpenses.toLocaleString()}</p>
+                        <p class="text-xl font-bold text-rose-600 mt-1">KSh ${r.totalExpenses.toLocaleString()}</p>
                     </div>
                     <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
                         <p class="text-xs font-bold text-slate-500 uppercase">Net Profit</p>
-                        <p class="text-xl font-bold text-emerald-600 mt-1">KSh ${netProfit.toLocaleString()}</p>
+                        <p class="text-xl font-bold text-emerald-600 mt-1">KSh ${r.netProfit.toLocaleString()}</p>
                     </div>
                 </div>
             `;
+
+            // Combined, newest-first transaction list
+            let rows = [];
+            if (type === 'all' || type === 'sale') r.sales.forEach(x => rows.push({ date: x.date, type: 'Sale', details: `${x.service} × ${x.qty} <span class="text-slate-400">(${x.id})</span>`, cat: x.mode, amount: x.total, sign: '+' }));
+            if (type === 'all' || type === 'expense') r.expenses.forEach(x => rows.push({ date: x.date, type: 'Expense', details: x.particular, cat: x.category, amount: x.amount, sign: '-' }));
+            if (type === 'all' || type === 'purchase') r.purchases.forEach(x => rows.push({ date: x.date, type: 'Stock Purchase', details: `${x.name} × ${x.packs} pack(s)`, cat: x.category, amount: x.total, sign: '' }));
+            rows.sort((a, b) => parseStamp(b.date) - parseStamp(a.date));
+
+            const badge = { 'Sale': 'bg-emerald-50 text-emerald-700', 'Expense': 'bg-rose-50 text-rose-700', 'Stock Purchase': 'bg-amber-50 text-amber-700' };
+            const color = { 'Sale': 'text-emerald-600', 'Expense': 'text-rose-600', 'Stock Purchase': 'text-slate-700' };
+            document.getElementById('reportTxBody').innerHTML = rows.map(x => `
+                <tr class="hover:bg-slate-50/50">
+                    <td class="p-4 text-slate-500 whitespace-nowrap">${formatStamp(x.date)}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 rounded-md font-semibold text-[10px] ${badge[x.type]}">${x.type}</span></td>
+                    <td class="p-4 font-medium text-slate-800">${x.details}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-md font-semibold text-[10px]">${x.cat}</span></td>
+                    <td class="p-4 text-right font-bold ${color[x.type]}">${x.sign}KSh ${x.amount.toLocaleString()}</td>
+                </tr>`).join('') || `<tr><td colspan="5" class="text-center py-6 text-slate-400">No transactions found for this period.</td></tr>`;
+            document.getElementById('reportTxCount').innerText = `${rows.length} transaction${rows.length === 1 ? '' : 's'}`;
         }
 
         function openReportsModal() {
-            const totalSales = salesData.reduce((acc, curr) => acc + curr.total, 0);
-            const totalExpenses = expensesData.reduce((acc, curr) => acc + curr.amount, 0);
-            const netProfit = totalSales - totalExpenses;
+            const { totalSales, totalExpenses, netProfit } = getReportTotals();
 
             activeModalType = 'reports';
             const modal = document.getElementById('universalModal');
@@ -1237,7 +1483,7 @@
             document.getElementById('modalBody').innerHTML = `
                 <div class="space-y-4 text-xs">
                     <div class="p-4 bg-slate-50 rounded-xl space-y-2">
-                        <p class="font-bold text-slate-700">Statement Period: All Time Live Summary</p>
+                        <p class="font-bold text-slate-700">Statement Period: ${reportPeriodLabel()}</p>
                         <div class="flex justify-between py-1 border-b">
                             <span>Total Gross Collections:</span>
                             <span class="font-bold text-indigo-600">KSh ${totalSales.toLocaleString()}</span>
@@ -1320,6 +1566,34 @@
             document.getElementById('batchUploadText').value = '';
             switchTab(target);
         }
+
+        // Guard every protected action so a role can't run it even if a button were exposed
+        (function guardActions() {
+            const guards = {
+                openServiceModal: 'services:edit', openEditServiceModal: 'services:edit', handleSaveService: 'services:edit',
+                saveServiceEdit: 'services:edit', deleteService: 'services:edit',
+                openInventoryItemModal: 'inventory:edit', saveNewInventoryItem: 'inventory:edit',
+                openInventoryEditModal: 'inventory:edit', saveInventoryEdit: 'inventory:edit',
+                openPurchaseModal: 'purchases:edit', handleSavePurchase: 'purchases:edit',
+                processCentralizedBatchUpload: 'batchUpload:edit',
+                openReportsModal: 'reports', openSettingsManagerModal: 'settings:edit',
+                saveBusinessSettings: 'settings:edit', resetAllData: 'settings:edit',
+                openSaleModal: 'sales:edit', handleSaveSale: 'sales:edit', deleteSale: 'sales:edit',
+                openExpenseModal: 'expenses:edit', handleSaveExpense: 'expenses:edit', deleteExpense: 'expenses:edit'
+            };
+            Object.entries(guards).forEach(([name, rule]) => {
+                const original = window[name];
+                if (typeof original !== 'function') return;
+                const [tab, mode] = rule.split(':');
+                window[name] = function (...args) {
+                    if (!(mode === 'edit' ? canEdit(tab) : canView(tab))) {
+                        alert('Your account does not have permission to do this.');
+                        return;
+                    }
+                    return original.apply(this, args);
+                };
+            });
+        })();
 
         function closeModal() {
             document.getElementById('universalModal').classList.add('hidden');
