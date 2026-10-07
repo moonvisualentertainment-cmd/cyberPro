@@ -111,8 +111,8 @@
             <div class="p-4 border-t border-slate-800 bg-slate-950/40">
                 <p class="text-xs text-slate-500 uppercase font-semibold">System Status</p>
                 <div class="flex items-center space-x-2 mt-1">
-                    <span id="syncIndicatorDot" class="h-2 w-2 rounded-full bg-emerald-400"></span>
-                    <span id="syncIndicatorText" class="text-xs text-slate-300 font-medium">Firebase Connected</span>
+                    <span id="syncIndicatorDot" class="h-2 w-2 rounded-full bg-slate-500"></span>
+                    <span id="syncIndicatorText" class="text-xs text-slate-300 font-medium">Connecting…</span>
                 </div>
             </div>
         </aside>
@@ -120,3 +120,1640 @@
         <!-- MAIN CONTENT AREA -->
         <div class="flex-1 flex flex-col min-w-0">
             <!-- Top Header -->
+            <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center shadow-xs">
+                <div>
+                    <h2 id="headerTitle" class="text-xl font-bold text-slate-900">Dashboard Overview</h2>
+                    <p id="headerSubtitle" class="text-xs text-slate-500">Real-time collections, payment breakdown, and today's service performance.</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="syncStatus" class="px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-500">○ Connecting…</span>
+                    <span class="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded-full" id="currentDateDisplay">Wed, 7 Oct 2026</span>
+                    <div class="flex items-center space-x-3 border-l pl-4 border-slate-200">
+                        <div class="text-right">
+                            <p class="text-xs font-bold text-slate-900" id="userRoleTitle">Manager: Admin</p>
+                            <p class="text-[10px] text-indigo-600 font-semibold uppercase tracking-wider">Active Session</p>
+                        </div>
+                        <div class="bg-indigo-100 text-indigo-700 font-bold h-9 w-9 rounded-full flex items-center justify-center text-sm" id="userAvatarInitials">AD</div>
+                        <button onclick="handleLogout()" title="Sign Out" class="p-2 text-slate-400 hover:text-red-600 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Tab Body -->
+            <main class="flex-1 p-8 overflow-y-auto">
+
+                <!-- 1. DASHBOARD TAB -->
+                <div id="tab-dashboard" class="tab-content space-y-6">
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center gap-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-2">Quick Links</span>
+                        <button data-needs="sales" onclick="openSaleModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition">
+                            + Record Sale
+                        </button>
+                        <button data-needs="expenses" onclick="openExpenseModal()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-rose-600/30 transition">
+                            + Log Expense
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Today's Sales</p>
+                            <h3 class="text-2xl font-bold mt-2 text-slate-900" id="dashTotalSales">KSh 0</h3>
+                            <p class="text-xs text-emerald-600 font-semibold mt-1">↑ Total Gross</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Cash Received</p>
+                            <h3 class="text-2xl font-bold mt-2 text-emerald-600" id="dashCashSales">KSh 0</h3>
+                            <p class="text-xs text-slate-400 mt-1">Drawer Cash</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">M-Pesa Received</p>
+                            <h3 class="text-2xl font-bold mt-2 text-indigo-600" id="dashMpesaSales">KSh 0</h3>
+                            <p class="text-xs text-slate-400 mt-1">Digital Payments</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Today Receipts</p>
+                            <h3 class="text-2xl font-bold mt-2 text-amber-600" id="dashReceiptsCount">0</h3>
+                            <p class="text-xs text-slate-400 mt-1">Completed Sales</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+                            <div>
+                                <h3 class="font-bold text-slate-900">Today's Payment Breakdown</h3>
+                                <p class="text-xs text-slate-500">Summary of cash vs M-PESA collections.</p>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
+                                <div>
+                                    <p class="text-xs font-bold text-slate-700">Physical Cash</p>
+                                    <p class="text-[10px] text-slate-400">Drawer collections</p>
+                                </div>
+                                <span class="font-bold text-emerald-600 text-sm" id="dashBreakdownCash">KSh 0</span>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
+                                <div>
+                                    <p class="text-xs font-bold text-slate-700">M-PESA Paybill/Till</p>
+                                    <p class="text-[10px] text-slate-400">Digital collections</p>
+                                </div>
+                                <span class="font-bold text-indigo-600 text-sm" id="dashBreakdownMpesa">KSh 0</span>
+                            </div>
+                            <div class="pt-4 border-t border-slate-100 flex justify-between text-xs">
+                                <span class="text-slate-500 font-medium">Active Shift Status</span>
+                                <span class="text-emerald-600 font-bold">Balanced</span>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h3 class="font-bold text-slate-900">Today's Service Sales Performance</h3>
+                                    <p class="text-xs text-slate-500">Breakdown of services sold today.</p>
+                                </div>
+                                <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-semibold rounded-full">Live Feed</span>
+                            </div>
+                            <div id="dashServiceChartContainer" class="space-y-4 pt-2">
+                                <p class="text-xs text-slate-400 text-center py-6">No sales recorded for today yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. SERVICES DIRECTORY TAB -->
+                <div id="tab-services" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-xs gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Services Directory & Price Mapping</h3>
+                            <p class="text-xs text-slate-500">Manage service pricing and inventory deduction items.</p>
+                        </div>
+                        <div class="flex items-center space-x-3 w-full md:w-auto">
+                            <button data-needs="batchUpload" onclick="switchTab('batchUpload')" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow transition whitespace-nowrap">
+                                📦 + Batch Upload Center
+                            </button>
+                            <button data-needs="services:edit" onclick="openServiceModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow transition whitespace-nowrap">
+                                + Add New Service
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                            <input type="text" id="serviceSearchInput" oninput="renderServicesTable()" placeholder="Search services..." class="w-full max-w-sm px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <span class="text-xs font-semibold text-slate-500" id="servicesCountLabel">Total: 0</span>
+                        </div>
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Service Type</th>
+                                    <th class="p-4">Service Item Name</th>
+                                    <th class="p-4">Mapped Inventory Item</th>
+                                    <th class="p-4">Price (KSh)</th>
+                                    <th class="p-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="servicesTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. STOCK PURCHASES TAB -->
+                <div id="tab-purchases" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-xs gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Stock Purchases</h3>
+                            <p class="text-xs text-slate-500">Record and review new stock purchases, pack quantities, unit prices, and total costs.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                            <button onclick="downloadBatchTemplate('purchases')" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow transition whitespace-nowrap">
+                                📥 Download Purchases Template
+                            </button>
+                            <select id="purchasesPeriodFilter" onchange="renderPurchasesTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Time</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="30days">Last 30 Days</option>
+                                <option value="3months">Last 3 Months</option>
+                            </select>
+                            <button onclick="openPurchaseModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow transition whitespace-nowrap">
+                                + Add Stock Purchase
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                            <input type="text" id="purchaseSearchInput" oninput="renderPurchasesTable()" placeholder="Search purchased items..." class="w-full max-w-sm px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <span class="text-xs font-semibold text-slate-500" id="purchasesCountLabel">Total: 0</span>
+                        </div>
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Date / Time</th>
+                                    <th class="p-4">Item Name</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Packs / Qty</th>
+                                    <th class="p-4">Pack Quantity (Pcs)</th>
+                                    <th class="p-4">Unit Price</th>
+                                    <th class="p-4 text-right">Total Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchasesTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 4. STOCK INVENTORY TAB -->
+                <div id="tab-inventory" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-xs gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Inventory & Stock Balances (Stock List)</h3>
+                            <p class="text-xs text-slate-500">Overview of current stock balances in store (Packs & Loose Available) with price adjustment support.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                            <button onclick="downloadBatchTemplate('inventory')" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow transition whitespace-nowrap">
+                                📥 Download Stock List Template
+                            </button>
+                            <button data-needs="inventory:edit" onclick="openInventoryItemModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow transition whitespace-nowrap">
+                                + Add Inventory Item
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Item Name</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Total Packs Available</th>
+                                    <th class="p-4">Loose Available (Pcs)</th>
+                                    <th class="p-4">Unit Price</th>
+                                    <th class="p-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 5. BATCH UPLOAD CENTER TAB -->
+                <div id="tab-batchUpload" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+                        <h3 class="font-bold text-slate-900 text-base">Centralized Batch Upload Center</h3>
+                        <p class="text-xs text-slate-500">Select your destination tab, upload your CSV file or paste raw rows, and save to instantly reflect changes on the respective system tab.</p>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-xs max-w-2xl space-y-6">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">1. Select Destination System Tab</label>
+                            <select id="batchUploadTarget" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="inventory">Stock Inventory (Stock List)</option>
+                                <option value="purchases">Stock Purchases</option>
+                                <option value="services">Services Directory</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">2. Upload CSV File or Paste Data</label>
+                            <input type="file" id="batchUploadFile" accept=".csv, .txt" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-150">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-semibold text-slate-500">Alternatively, Paste CSV Rows Below (One per line):</label>
+                            <textarea id="batchUploadText" rows="6" placeholder="Item Name | Category | Packs | Loose | Unit Price" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                        </div>
+
+                        <div id="batchFormatHint" class="p-4 bg-indigo-50/60 border border-indigo-100 rounded-xl text-xs text-indigo-800 space-y-1">
+                            <p class="font-bold">Format Guide:</p>
+                            <p class="font-mono text-[11px]">Inventory: Item Name | Category | Packs | Loose | Unit Price</p>
+                            <p class="font-mono text-[11px]">Purchases: Item Name | Category | Packs | Pack Qty | Unit Price | Total Cost</p>
+                        </div>
+
+                        <div class="flex justify-end pt-4 border-t">
+                            <button onclick="processCentralizedBatchUpload()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition">
+                                Save & Reflect on Respective Tab 🚀
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. EXPENSES TAB -->
+                <div id="tab-expenses" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-xs gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Operational Expenses</h3>
+                            <p class="text-xs text-slate-500">Log daily bills, utility tokens, and shop expenses.</p>
+                        </div>
+                        <div class="flex items-center space-x-3 w-full md:w-auto">
+                            <select id="expensesPeriodFilter" onchange="renderExpensesTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Time</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="30days">Last 30 Days</option>
+                                <option value="3months">Last 3 Months</option>
+                            </select>
+                            <button onclick="openExpenseModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition whitespace-nowrap">
+                                + Log Expense
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Date / Time</th>
+                                    <th class="p-4">Particular</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Amount (KSH)</th>
+                                    <th class="p-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expensesTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 7. SALES LEDGER TAB -->
+                <div id="tab-sales" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-xs gap-4">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Sales Ledger & Invoicing</h3>
+                            <p class="text-xs text-slate-500">Monitor all customer payments and collections.</p>
+                        </div>
+                        <div class="flex items-center space-x-3 w-full md:w-auto">
+                            <select id="salesPeriodFilter" onchange="renderSalesTable()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Time</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="30days">Last 30 Days</option>
+                                <option value="3months">Last 3 Months</option>
+                            </select>
+                            <button onclick="openSaleModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition whitespace-nowrap">
+                                + New Sale
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Receipt #</th>
+                                    <th class="p-4">Date / Time</th>
+                                    <th class="p-4">Service Name</th>
+                                    <th class="p-4">Qty</th>
+                                    <th class="p-4">Total Billed</th>
+                                    <th class="p-4">Payment Mode</th>
+                                    <th class="p-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 8. REPORTS TAB -->
+                <div id="tab-reports" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-slate-900">Financial Reports & Statements</h3>
+                            <p class="text-xs text-slate-500 mt-1">Review profitability, net totals, and summaries.</p>
+                        </div>
+                        <button onclick="openReportsModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition">
+                            Generate Full P&L Statement 📊
+                        </button>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-end gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Period</label>
+                            <select id="reportPeriod" onchange="onReportPeriodChange()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Time</option>
+                                <option value="today">Today</option>
+                                <option value="yesterday">Yesterday</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="30days">Last 30 Days</option>
+                                <option value="3months">Last 3 Months</option>
+                                <option value="custom">Custom Date / Range</option>
+                            </select>
+                        </div>
+                        <div id="reportCustomWrap" class="hidden flex flex-wrap items-end gap-3">
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">From</label>
+                                <input type="date" id="reportFrom" onchange="renderReportsView()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">To</label>
+                                <input type="date" id="reportTo" onchange="renderReportsView()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Show</label>
+                            <select id="reportType" onchange="renderReportsView()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="all">All Transactions</option>
+                                <option value="sale">Sales only</option>
+                                <option value="expense">Expenses only</option>
+                                <option value="purchase">Stock Purchases only</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="reportsSummaryCard" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4"></div>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                            <h3 class="font-bold text-slate-900 text-sm">Transactions</h3>
+                            <span class="text-xs font-semibold text-slate-500" id="reportTxCount">0 transactions</span>
+                        </div>
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                                    <th class="p-4">Date / Time</th>
+                                    <th class="p-4">Type</th>
+                                    <th class="p-4">Details</th>
+                                    <th class="p-4">Mode / Category</th>
+                                    <th class="p-4 text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportTxBody" class="divide-y divide-slate-100 text-xs"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 9. SETTINGS TAB -->
+                <div id="tab-settings" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                        <h3 class="font-bold text-slate-900">System Management & Data Controls</h3>
+                        <p class="text-xs text-slate-500">Manage records, download templates, and clear system cache preferences.</p>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <button onclick="openSettingsManagerModal()" class="px-4 py-2 bg-indigo-600 text-white font-semibold text-xs rounded-xl hover:bg-indigo-700 transition">
+                                Configure Business Details ⚙️
+                            </button>
+                            <button onclick="downloadBatchTemplate('inventory')" class="px-4 py-2 bg-emerald-600 text-white font-semibold text-xs rounded-xl hover:bg-emerald-700 transition">
+                                📥 Download Stock List CSV Template
+                            </button>
+                            <button onclick="downloadBatchTemplate('purchases')" class="px-4 py-2 bg-emerald-600 text-white font-semibold text-xs rounded-xl hover:bg-emerald-700 transition">
+                                📥 Download Purchases CSV Template
+                            </button>
+                            <button onclick="uploadLocalToCloud()" class="px-4 py-2 bg-slate-700 text-white font-semibold text-xs rounded-xl hover:bg-slate-800 transition">
+                                Upload This Device's Data to Cloud ☁️
+                            </button>
+                            <button onclick="resetAllData()" class="px-4 py-2 bg-red-600 text-white font-semibold text-xs rounded-xl hover:bg-red-700 transition">
+                                Reset All Data Cache
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ==================== UNIVERSAL MODALS ==================== -->
+    <div id="universalModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h3 id="modalTitle" class="font-bold text-slate-900 text-sm">Modal Title</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 font-bold text-base">&times;</button>
+            </div>
+            <div id="modalBody" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- ==================== FIREBASE SDKs & JAVASCRIPT LOGIC ==================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update, set, remove } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-IrYUD93iziTmJ2SNP-zPX8dbjdVdPXg",
+            authDomain: "cyberpro-1a339.firebaseapp.com",
+            databaseURL: "https://cyberpro-1a339-default-rtdb.firebaseio.com",
+            projectId: "cyberpro-1a339",
+            storageBucket: "cyberpro-1a339.firebasestorage.app",
+            messagingSenderId: "928496899763",
+            appId: "1:928496899763:web:aa7997f8f2e04be5ad42c6",
+            measurementId: "G-YFK62PFENF"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const ROOT = 'cybercafe';
+
+        import("https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js")
+            .then(m => m.getAnalytics(app)).catch(() => {});
+
+        window.cloud = {
+            push: (col, changes) => update(ref(db, `${ROOT}/${col}`), changes),
+            setBrand: name => set(ref(db, `${ROOT}/settings/brandName`), name),
+            clearAll: () => remove(ref(db, ROOT))
+        };
+
+        ['sales', 'expenses', 'services', 'purchases', 'inventory'].forEach(col => {
+            onValue(ref(db, `${ROOT}/${col}`),
+                snap => window.onCloudData && window.onCloudData(col, snap.val() || {}),
+                err => window.onCloudError && window.onCloudError(err));
+        });
+        onValue(ref(db, `${ROOT}/settings/brandName`), snap => window.onCloudBrand && window.onCloudBrand(snap.val()));
+        onValue(ref(db, '.info/connected'), snap => window.onCloudStatus && window.onCloudStatus(!!snap.val()));
+        window.dispatchEvent(new Event('cloud-ready'));
+    </script>
+
+    <script>
+        let currentUser = JSON.parse(localStorage.getItem('cyber_current_user')) || null;
+        let businessName = localStorage.getItem('cyber_brand_name') || 'CyberCafé Pro';
+        
+        let salesData = JSON.parse(localStorage.getItem('cyber_sales')) || [];
+        let expensesData = JSON.parse(localStorage.getItem('cyber_expenses')) || [];
+        let servicesData = JSON.parse(localStorage.getItem('cyber_services')) || [];
+        let purchasesData = JSON.parse(localStorage.getItem('cyber_purchases')) || [];
+        let inventoryData = JSON.parse(localStorage.getItem('cyber_inventory')) || [];
+
+        let activeModalType = null;
+        let activeTabId = 'dashboard';
+
+        const SYNC = {
+            sales:     { get: () => salesData,     set: v => { salesData = v; } },
+            expenses:  { get: () => expensesData,  set: v => { expensesData = v; } },
+            services:  { get: () => servicesData,  set: v => { servicesData = v; } },
+            purchases: { get: () => purchasesData, set: v => { purchasesData = v; } },
+            inventory: { get: () => inventoryData, set: v => { inventoryData = v; } }
+        };
+        const shadow = {};
+        const cloudReady = {};
+        const pendingCloud = {};
+        let keySeq = 0;
+
+        function newKey() {
+            return Date.now().toString(36).padStart(9, '0') + (keySeq++).toString(36).padStart(3, '0') + Math.random().toString(36).slice(2, 6);
+        }
+        function ensureKeys(arr) { arr.forEach(r => { if (!r._k) r._k = newKey(); }); }
+
+        Object.keys(SYNC).forEach(col => {
+            const arr = SYNC[col].get();
+            ensureKeys(arr);
+            shadow[col] = {};
+            arr.forEach(r => { shadow[col][r._k] = JSON.stringify(r); });
+        });
+
+        function persistData(key, arr) {
+            const col = key.replace('cyber_', '');
+            ensureKeys(arr);
+            localStorage.setItem(key, JSON.stringify(arr));
+            pushDiff(col, arr);
+        }
+
+        function pushDiff(col, arr) {
+            if (!window.cloud) return;
+            const sh = shadow[col] || (shadow[col] = {});
+            const changes = {}, seen = {};
+            arr.forEach(r => {
+                const j = JSON.stringify(r);
+                seen[r._k] = true;
+                if (sh[r._k] !== j) changes[r._k] = JSON.parse(j);
+            });
+            Object.keys(sh).forEach(k => { if (!seen[k]) changes[k] = null; });
+            if (!Object.keys(changes).length) return;
+            window.cloud.push(col, changes).then(() => {
+                Object.keys(changes).forEach(k => {
+                    if (changes[k] === null) delete sh[k]; else sh[k] = JSON.stringify(changes[k]);
+                });
+            }).catch(err => window.onCloudError(err));
+        }
+
+        function sortCol(col, arr) {
+            if (col === 'sales' || col === 'expenses' || col === 'purchases') {
+                arr.sort((a, b) => (parseStamp(b.date) - parseStamp(a.date)) || (b._k > a._k ? 1 : -1));
+            } else {
+                arr.sort((a, b) => (a._k < b._k ? -1 : 1));
+            }
+        }
+
+        function applyCloud(col, arr) {
+            sortCol(col, arr);
+            SYNC[col].set(arr);
+            shadow[col] = {};
+            arr.forEach(r => { shadow[col][r._k] = JSON.stringify(r); });
+            localStorage.setItem('cyber_' + col, JSON.stringify(arr));
+        }
+
+        function refreshActiveTab() {
+            if (!currentUser) return;
+            const m = { dashboard: renderDashboard, sales: renderSalesTable, expenses: renderExpensesTable,
+                        services: renderServicesTable, purchases: renderPurchasesTable,
+                        inventory: renderInventoryTable, reports: renderReportsView };
+            if (m[activeTabId]) m[activeTabId]();
+            if (activeTabId !== 'dashboard' && (activeTabId === 'sales')) renderDashboard();
+        }
+
+        function isModalOpen() { return !document.getElementById('universalModal').classList.contains('hidden'); }
+
+        function flushPendingCloud() {
+            const cols = Object.keys(pendingCloud);
+            if (!cols.length) return;
+            cols.forEach(col => { applyCloud(col, pendingCloud[col]); delete pendingCloud[col]; });
+            refreshActiveTab();
+        }
+
+        window.onCloudData = function (col, obj) {
+            const arr = Object.keys(obj).map(k => { const r = obj[k]; r._k = k; return r; });
+            if (!cloudReady[col]) {
+                cloudReady[col] = true;
+                const local = SYNC[col].get();
+                if (arr.length === 0 && local.length > 0) {
+                    shadow[col] = {};
+                    pushDiff(col, local);
+                    return;
+                }
+            }
+            if (isModalOpen()) { pendingCloud[col] = arr; return; }
+            applyCloud(col, arr);
+            refreshActiveTab();
+        };
+
+        window.onCloudBrand = function (name) {
+            if (!name || name === businessName) return;
+            businessName = name;
+            localStorage.setItem('cyber_brand_name', name);
+            applyBrandName();
+        };
+
+        function setSyncStatus(state, detail) {
+            const el = document.getElementById('syncStatus');
+            if (!el) return;
+            const styles = {
+                online:  ['bg-emerald-50 text-emerald-700', '● Live sync'],
+                offline: ['bg-amber-50 text-amber-700', '● Offline – saved on this device'],
+                error:   ['bg-rose-50 text-rose-700', '● Sync error']
+            };
+            el.className = 'px-3 py-1 text-xs font-semibold rounded-full ' + styles[state][0];
+            el.innerText = styles[state][1];
+            el.title = detail || '';
+
+            const dot = document.getElementById('syncIndicatorDot'), txt = document.getElementById('syncIndicatorText');
+            if (dot && txt) {
+                const look = {
+                    online:  ['bg-emerald-400', 'Firebase Connected'],
+                    offline: ['bg-amber-400', 'Offline – saving locally'],
+                    error:   ['bg-rose-500', 'Sync error']
+                }[state];
+                dot.className = 'h-2 w-2 rounded-full ' + look[0];
+                txt.innerText = look[1];
+            }
+        }
+        window.onCloudStatus = online => setSyncStatus(online ? 'online' : 'offline');
+        window.onCloudError = err => {
+            console.error('Cloud sync error:', err);
+            setSyncStatus('error', String(err && err.message || err));
+        };
+
+        function uploadLocalToCloud() {
+            if (!confirm('Upload all records saved on THIS device to the shared cloud database?')) return;
+            Object.keys(SYNC).forEach(col => { const a = SYNC[col].get(); ensureKeys(a); shadow[col] = {}; pushDiff(col, a); });
+            alert('Upload started.');
+        }
+
+        // ==================== TEMPLATE DOWNLOAD HELPER ====================
+        function downloadBatchTemplate(type) {
+            let filename = '';
+            let csvContent = '';
+            
+            if (type === 'inventory') {
+                filename = 'Stock_List.csv';
+                csvContent = 'Item Name,Category,Packs Available,Loose Available (Pcs),Unit Price per Pack (KSh)\nA4 Paper,Printing Consumables,2,450,650\nLaminating Pouches,Binding Consumables,1,100,500';
+            } else if (type === 'purchases') {
+                filename = 'Purchases.csv';
+                csvContent = 'Item Name,Category,Packs Purchased,Pieces per Pack,Unit Price per Pack (KSh),Total Cost (KSh)\nA4 Paper,Printing Consumables,2,500,650,1300';
+            }
+
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        const ROLE_ACCESS = {
+            Admin: { dashboard: 'full', services: 'full', sales: 'full', expenses: 'full', purchases: 'full',
+                     inventory: 'full', batchUpload: 'full', reports: 'full', settings: 'full' },
+            Staff: { dashboard: 'full', services: 'view', sales: 'full', expenses: 'full', inventory: 'view' }
+        };
+        function accessLevel(tab) { return (ROLE_ACCESS[currentUser?.role] || {})[tab] || null; }
+        function canView(tab) { return !!accessLevel(tab); }
+        function canEdit(tab) { return accessLevel(tab) === 'full'; }
+
+        function applyRoleAccess() {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.toggle('hidden', !canView(btn.id.replace('nav-', '')));
+            });
+            const adminVisible = canView('reports') || canView('settings');
+            document.getElementById('adminNavHeading').classList.toggle('hidden', !adminVisible);
+            document.querySelectorAll('[data-needs]').forEach(el => {
+                const [tab, mode] = el.dataset.needs.split(':');
+                el.classList.toggle('hidden', !(mode === 'edit' ? canEdit(tab) : canView(tab)));
+            });
+        }
+
+        const APP_TZ = 'Africa/Nairobi';
+        const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const pad2 = n => String(n).padStart(2, '0');
+
+        function nairobiParts(d = new Date()) {
+            const parts = new Intl.DateTimeFormat('en-GB', {
+                timeZone: APP_TZ, hourCycle: 'h23',
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            }).formatToParts(d).reduce((o, p) => (o[p.type] = p.value, o), {});
+            return { y: +parts.year, mo: +parts.month, d: +parts.day, h: +parts.hour, mi: +parts.minute, s: +parts.second };
+        }
+
+        function nowStamp() {
+            const p = nairobiParts();
+            return `${p.y}-${pad2(p.mo)}-${pad2(p.d)} ${pad2(p.h)}:${pad2(p.mi)}:${pad2(p.s)}`;
+        }
+
+        function parseStamp(str) {
+            const m = /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?/.exec(str || '');
+            if (!m) return NaN;
+            return Date.UTC(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
+        }
+
+        function nowWallMs() {
+            const p = nairobiParts();
+            return Date.UTC(p.y, p.mo - 1, p.d, p.h, p.mi, p.s);
+        }
+
+        function formatStamp(str) {
+            const m = /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/.exec(str || '');
+            if (!m) return str || '';
+            const datePart = `${+m[3]} ${MONTHS[+m[2] - 1]} ${m[1]}`;
+            if (m[4] === undefined) return datePart;
+            const h = +m[4];
+            return `${datePart}, ${h % 12 || 12}:${m[5]} ${h < 12 ? 'AM' : 'PM'}`;
+        }
+
+        function todayKey() { return nowStamp().slice(0, 10); }
+        function isToday(str) { return (str || '').slice(0, 10) === todayKey(); }
+
+        function inPeriod(str, period) {
+            if (!period || period === 'all') return true;
+            const t = parseStamp(str);
+            if (isNaN(t)) return true;
+            const now = new Date(nowWallMs());
+            const DAY = 86400000;
+            if (period === 'today') return str.slice(0, 10) === todayKey();
+            if (period === 'yesterday') return str.slice(0, 10) === new Date(nowWallMs() - DAY).toISOString().slice(0, 10);
+            if (period === 'week') {
+                const dow = (now.getUTCDay() + 6) % 7;
+                const start = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - dow * DAY;
+                return t >= start && t <= now.getTime();
+            }
+            if (period === 'month') {
+                const d = new Date(t);
+                return d.getUTCFullYear() === now.getUTCFullYear() && d.getUTCMonth() === now.getUTCMonth();
+            }
+            if (period === '30days') return t >= now.getTime() - 30 * DAY && t <= now.getTime();
+            if (period === '3months') {
+                const start = Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 3, now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes());
+                return t >= start && t <= now.getTime();
+            }
+            return true;
+        }
+
+        function updateClock() {
+            const el = document.getElementById('currentDateDisplay');
+            if (!el) return;
+            const p = nairobiParts();
+            const dow = DAYS[new Date(Date.UTC(p.y, p.mo - 1, p.d)).getUTCDay()];
+            el.innerText = `${dow}, ${p.d} ${MONTHS[p.mo - 1]} ${p.y} • ${p.h % 12 || 12}:${pad2(p.mi)}:${pad2(p.s)} ${p.h < 12 ? 'AM' : 'PM'} EAT`;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            applyBrandName();
+            if (currentUser) {
+                showAppSection();
+            } else {
+                showLoginSection();
+            }
+
+            document.getElementById('loginForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const user = document.getElementById('username').value.trim();
+                const pass = document.getElementById('password').value.trim();
+
+                if ((user === 'admin' && pass === 'Man1234') || (user === 'staff' && pass === 'S1234')) {
+                    currentUser = { username: user, role: user === 'admin' ? 'Admin' : 'Staff' };
+                    localStorage.setItem('cyber_current_user', JSON.stringify(currentUser));
+                    document.getElementById('loginError').classList.add('hidden');
+                    showAppSection();
+                } else {
+                    document.getElementById('loginError').classList.remove('hidden');
+                }
+            });
+
+            const fileInput = document.getElementById('batchUploadFile');
+            if (fileInput) {
+                fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        document.getElementById('batchUploadText').value = evt.target.result;
+                    };
+                    reader.readAsText(file);
+                });
+            }
+        });
+
+        function applyBrandName() {
+            document.querySelectorAll('.sidebarBrandName').forEach(el => el.innerText = businessName);
+            document.getElementById('loginBrandName').innerText = businessName;
+            document.getElementById('pageTitleMeta').innerText = `${businessName} - Management System`;
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('cyber_current_user');
+            showLoginSection();
+        }
+
+        function showLoginSection() {
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('appSection').classList.add('hidden');
+        }
+
+        function showAppSection() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('appSection').classList.remove('hidden');
+            document.getElementById('userRoleTitle').innerText = `Manager: ${currentUser.role}`;
+            document.getElementById('userAvatarInitials').innerText = currentUser.role === 'Admin' ? 'AD' : 'ST';
+            applyRoleAccess();
+            switchTab('dashboard');
+        }
+
+        function switchTab(tabId) {
+            if (!canView(tabId)) tabId = 'dashboard';
+            activeTabId = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
+                el.classList.add('hover:bg-slate-800', 'text-slate-300');
+            });
+
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            const targetNav = document.getElementById(`nav-${tabId}`);
+            if (targetTab) targetTab.classList.remove('hidden');
+            if (targetNav) {
+                targetNav.classList.remove('hover:bg-slate-800', 'text-slate-300');
+                targetNav.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
+            }
+
+            if (tabId === 'dashboard') renderDashboard();
+            if (tabId === 'sales') renderSalesTable();
+            if (tabId === 'expenses') renderExpensesTable();
+            if (tabId === 'services') renderServicesTable();
+            if (tabId === 'purchases') renderPurchasesTable();
+            if (tabId === 'inventory') renderInventoryTable();
+            if (tabId === 'reports') renderReportsView();
+        }
+
+        function renderDashboard() {
+            const todaysSales = salesData.filter(s => isToday(s.date));
+            const totalSales = todaysSales.reduce((acc, curr) => acc + curr.total, 0);
+            const cashSales = todaysSales.filter(s => s.mode === 'Cash').reduce((acc, curr) => acc + curr.total, 0);
+            const mpesaSales = todaysSales.filter(s => s.mode === 'M-Pesa').reduce((acc, curr) => acc + curr.total, 0);
+
+            document.getElementById('dashTotalSales').innerText = `KSh ${totalSales.toLocaleString()}`;
+            document.getElementById('dashCashSales').innerText = `KSh ${cashSales.toLocaleString()}`;
+            document.getElementById('dashMpesaSales').innerText = `KSh ${mpesaSales.toLocaleString()}`;
+            document.getElementById('dashReceiptsCount').innerText = todaysSales.length;
+
+            document.getElementById('dashBreakdownCash').innerText = `KSh ${cashSales.toLocaleString()}`;
+            document.getElementById('dashBreakdownMpesa').innerText = `KSh ${mpesaSales.toLocaleString()}`;
+
+            const chartContainer = document.getElementById('dashServiceChartContainer');
+            if (todaysSales.length === 0) {
+                chartContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">No sales recorded today yet.</p>`;
+                return;
+            }
+
+            let html = '';
+            todaysSales.forEach(sale => {
+                html += `
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center text-xs">
+                        <div>
+                            <span class="font-bold text-slate-800">${sale.service}</span>
+                            <span class="text-slate-400 ml-2">(${sale.id})</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-bold text-indigo-600">KSh ${sale.total.toLocaleString()}</span>
+                            <span class="block text-[10px] text-slate-400">${sale.mode} • Qty: ${sale.qty}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            chartContainer.innerHTML = html;
+        }
+
+        function renderSalesTable() {
+            const tbody = document.getElementById('salesTableBody');
+            let html = '';
+            const period = document.getElementById('salesPeriodFilter')?.value || 'all';
+            salesData.forEach((sale, index) => {
+                if (!inPeriod(sale.date, period)) return;
+                html += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="p-4 font-bold text-slate-700">${sale.id}</td>
+                        <td class="p-4 text-slate-500 whitespace-nowrap">${formatStamp(sale.date)}</td>
+                        <td class="p-4 font-medium text-slate-800">${sale.service}</td>
+                        <td class="p-4">${sale.qty}</td>
+                        <td class="p-4 font-bold text-indigo-600">KSh ${sale.total.toLocaleString()}</td>
+                        <td class="p-4"><span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-md font-semibold text-[10px]">${sale.mode}</span></td>
+                        <td class="p-4 text-right">
+                            <button onclick="deleteSale(${index})" class="text-red-500 hover:text-red-700 font-semibold text-xs">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html || `<tr><td colspan="7" class="text-center py-6 text-slate-400">No sales recorded yet.</td></tr>`;
+        }
+
+        function openSaleModal() {
+            activeModalType = 'sale';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = 'Record New Sale';
+            
+            let serviceOptions = servicesData.map(s => `<option value="${s.name}" data-price="${s.price}">${s.name} (KSh ${s.price})</option>`).join('');
+
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">SELECT SERVICE / ITEM</label>
+                        <select id="saleService" onchange="onSaleServiceChange()" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800">
+                            ${serviceOptions}
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">QUANTITY</label>
+                            <input type="number" id="saleQty" value="1" min="1" oninput="calculateSaleTotal()" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">UNIT PRICE (KSH)</label>
+                            <input type="number" id="saleUnitPrice" value="0" min="0" oninput="calculateSaleTotal()" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">TOTAL BILLED AMOUNT (KSH)</label>
+                        <input type="number" id="saleTotal" value="0" readonly class="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">PAYMENT MODE</label>
+                        <select id="saleMode" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800">
+                            <option value="Cash">Cash</option>
+                            <option value="M-Pesa">M-Pesa</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end items-center space-x-3 pt-4 border-t border-slate-100 mt-6">
+                        <button type="button" onclick="closeModal()" class="px-5 py-2.5 bg-slate-100 text-slate-700 font-semibold text-xs rounded-xl">Cancel</button>
+                        <button type="button" onclick="handleSaveSale()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow">Save Sale</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+            onSaleServiceChange();
+        }
+
+        function onSaleServiceChange() {
+            const select = document.getElementById('saleService');
+            const selectedOpt = select.options[select.selectedIndex];
+            const price = selectedOpt ? parseFloat(selectedOpt.getAttribute('data-price')) || 0 : 0;
+            document.getElementById('saleUnitPrice').value = price;
+            calculateSaleTotal();
+        }
+
+        function calculateSaleTotal() {
+            const qty = parseFloat(document.getElementById('saleQty').value) || 0;
+            const unitPrice = parseFloat(document.getElementById('saleUnitPrice').value) || 0;
+            document.getElementById('saleTotal').value = qty * unitPrice;
+        }
+
+        function handleSaveSale() {
+            const serviceName = document.getElementById('saleService').value;
+            const qty = parseInt(document.getElementById('saleQty').value) || 1;
+            const total = parseFloat(document.getElementById('saleTotal').value) || 0;
+            const mode = document.getElementById('saleMode').value;
+
+            const matchedService = servicesData.find(s => s.name === serviceName);
+            if (matchedService && matchedService.mappedItem && matchedService.mappedItem !== 'None') {
+                const invItem = inventoryData.find(i => i.name === matchedService.mappedItem);
+                if (invItem) {
+                    let remainingDeduction = qty;
+                    if (invItem.loose >= remainingDeduction) {
+                        invItem.loose -= remainingDeduction;
+                    } else {
+                        remainingDeduction -= invItem.loose;
+                        invItem.loose = 0;
+                        while (remainingDeduction > 0 && invItem.packs > 0) {
+                            invItem.packs -= 1;
+                            invItem.loose += (500 - remainingDeduction);
+                            remainingDeduction = 0;
+                        }
+                    }
+                    persistData('cyber_inventory', inventoryData);
+                }
+            }
+
+            salesData.unshift({
+                id: `REC-${Math.floor(1000 + Math.random() * 9000)}`,
+                date: nowStamp(),
+                service: serviceName,
+                qty: qty,
+                total: total,
+                mode: mode
+            });
+            persistData('cyber_sales', salesData);
+            closeModal();
+            renderSalesTable();
+            renderDashboard();
+        }
+
+        function deleteSale(index) {
+            salesData.splice(index, 1);
+            persistData('cyber_sales', salesData);
+            renderSalesTable();
+            renderDashboard();
+        }
+
+        function renderExpensesTable() {
+            const tbody = document.getElementById('expensesTableBody');
+            let html = '';
+            const period = document.getElementById('expensesPeriodFilter')?.value || 'all';
+            expensesData.forEach((exp, index) => {
+                if (!inPeriod(exp.date, period)) return;
+                html += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="p-4 text-slate-500 whitespace-nowrap">${formatStamp(exp.date)}</td>
+                        <td class="p-4 font-bold text-slate-800">${exp.particular}</td>
+                        <td class="p-4"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-md font-semibold text-[10px]">${exp.category}</span></td>
+                        <td class="p-4 font-bold text-rose-600">KSh ${exp.amount.toLocaleString()}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="deleteExpense(${index})" class="text-red-500 hover:text-red-700 font-semibold text-xs">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html || `<tr><td colspan="5" class="text-center py-6 text-slate-400">No expenses recorded yet.</td></tr>`;
+        }
+
+        function openExpenseModal() {
+            activeModalType = 'expense';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = 'Log Operational Expense';
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Particular / Description</label>
+                        <input type="text" id="expParticular" placeholder="e.g. Electricity Token" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+                        <select id="expCategory" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                            <option value="Utilities">Utilities</option>
+                            <option value="Supplies">Supplies</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="General">General</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Amount (KSh)</label>
+                        <input type="number" id="expAmount" placeholder="e.g. 1000" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="button" onclick="handleSaveExpense()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl">Save Expense</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function handleSaveExpense() {
+            const particular = document.getElementById('expParticular').value;
+            const category = document.getElementById('expCategory').value;
+            const amount = parseFloat(document.getElementById('expAmount').value) || 0;
+
+            if (!particular || !amount) { alert('Please fill in required fields.'); return; }
+
+            expensesData.unshift({
+                id: `EXP-${Math.floor(100 + Math.random() * 900)}`,
+                date: nowStamp(),
+                particular: particular,
+                category: category,
+                amount: amount
+            });
+            persistData('cyber_expenses', expensesData);
+            closeModal();
+            renderExpensesTable();
+        }
+
+        function deleteExpense(index) {
+            expensesData.splice(index, 1);
+            persistData('cyber_expenses', expensesData);
+            renderExpensesTable();
+        }
+
+        function renderServicesTable() {
+            const tbody = document.getElementById('servicesTableBody');
+            const search = document.getElementById('serviceSearchInput').value.toLowerCase();
+            let html = '';
+            const filtered = servicesData.filter(s => s.name.toLowerCase().includes(search) || s.type.toLowerCase().includes(search));
+            
+            filtered.forEach((srv) => {
+                const originalIndex = servicesData.indexOf(srv);
+                html += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="p-4 font-semibold text-slate-600">${srv.type}</td>
+                        <td class="p-4 font-bold text-slate-800">${srv.name}</td>
+                        <td class="p-4 text-slate-500">${srv.mappedItem}</td>
+                        <td class="p-4 font-bold text-indigo-600">KSh ${srv.price.toLocaleString()}</td>
+                        <td class="p-4 text-right space-x-2">
+                            ${!canEdit('services') ? '<span class="text-[10px] text-slate-400">View only</span>' : `
+                            <button onclick="openEditServiceModal(${originalIndex})" class="text-indigo-600 hover:text-indigo-800 font-semibold text-xs">Edit</button>
+                            <button onclick="deleteService(${originalIndex})" class="text-red-500 hover:text-red-700 font-semibold text-xs">Delete</button>`}
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html || `<tr><td colspan="5" class="text-center py-6 text-slate-400">No services found.</td></tr>`;
+            document.getElementById('servicesCountLabel').innerText = `Total: ${servicesData.length}`;
+        }
+
+        function openServiceModal() {
+            activeModalType = 'service';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = 'Add New Service';
+            let inventoryOptions = `<option value="None">None (No Mapping)</option>` + inventoryData.map(i => `<option value="${i.name}">${i.name}</option>`).join('');
+
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Service Type / Category</label>
+                        <input type="text" id="srvType" placeholder="e.g. Document Services" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Service Item Name</label>
+                        <input type="text" id="srvName" placeholder="e.g. Binding" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Mapped Inventory Item</label>
+                        <select id="srvMapped" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">${inventoryOptions}</select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Price (KSh)</label>
+                        <input type="number" id="srvPrice" placeholder="e.g. 100" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="button" onclick="handleSaveService()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl">Save Service</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function openEditServiceModal(index) {
+            const srv = servicesData[index];
+            activeModalType = 'editService';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = `Edit Service: ${srv.name}`;
+            let inventoryOptions = `<option value="None" ${srv.mappedItem === 'None' ? 'selected' : ''}>None (No Mapping)</option>` + 
+                inventoryData.map(i => `<option value="${i.name}" ${srv.mappedItem === i.name ? 'selected' : ''}>${i.name}</option>`).join('');
+
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Service Type / Category</label>
+                        <input type="text" id="srvType" value="${srv.type}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Service Item Name</label>
+                        <input type="text" id="srvName" value="${srv.name}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Mapped Inventory Item</label>
+                        <select id="srvMapped" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">${inventoryOptions}</select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Price (KSh)</label>
+                        <input type="number" id="srvPrice" value="${srv.price}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="button" onclick="saveServiceEdit(${index})" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl">Update Service</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function handleSaveService() {
+            const type = document.getElementById('srvType').value;
+            const name = document.getElementById('srvName').value;
+            const mappedItem = document.getElementById('srvMapped').value || 'None';
+            const price = parseFloat(document.getElementById('srvPrice').value) || 0;
+
+            if (!type || !name) { alert('Please fill in required fields.'); return; }
+            servicesData.push({ type, name, mappedItem, price });
+            persistData('cyber_services', servicesData);
+            closeModal();
+            renderServicesTable();
+        }
+
+        function saveServiceEdit(index) {
+            servicesData[index].type = document.getElementById('srvType').value;
+            servicesData[index].name = document.getElementById('srvName').value;
+            servicesData[index].mappedItem = document.getElementById('srvMapped').value;
+            servicesData[index].price = parseFloat(document.getElementById('srvPrice').value) || 0;
+            persistData('cyber_services', servicesData);
+            closeModal();
+            renderServicesTable();
+        }
+
+        function deleteService(index) {
+            servicesData.splice(index, 1);
+            persistData('cyber_services', servicesData);
+            renderServicesTable();
+        }
+
+        function renderPurchasesTable() {
+            const tbody = document.getElementById('purchasesTableBody');
+            let html = '';
+            const period = document.getElementById('purchasesPeriodFilter')?.value || 'all';
+            const visiblePurchases = purchasesData.filter(p => inPeriod(p.date, period));
+            visiblePurchases.forEach(p => {
+                html += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="p-4 text-slate-500 whitespace-nowrap">${formatStamp(p.date)}</td>
+                        <td class="p-4 font-bold text-slate-800">${p.name}</td>
+                        <td class="p-4"><span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-md text-[10px]">${p.category}</span></td>
+                        <td class="p-4">${p.packs}</td>
+                        <td class="p-4">${p.packQty}</td>
+                        <td class="p-4">KSh ${p.unitPrice.toLocaleString()}</td>
+                        <td class="p-4 font-bold text-indigo-600 text-right">KSh ${p.total.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html || `<tr><td colspan="7" class="text-center py-6 text-slate-400">No stock purchases recorded.</td></tr>`;
+            document.getElementById('purchasesCountLabel').innerText = `Total: ${visiblePurchases.length}`;
+        }
+
+        function openPurchaseModal() {
+            activeModalType = 'purchase';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = 'Add Stock Purchase';
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Item Name</label>
+                        <input type="text" id="purName" placeholder="e.g. A4 Paper" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+                        <input type="text" id="purCategory" placeholder="e.g. Printing Consumables" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Number of Packs</label>
+                        <input type="number" id="purPacks" value="1" min="1" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Pack Quantity (Pcs per Pack)</label>
+                        <input type="number" id="purPackQty" value="500" min="1" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Unit Price per Pack (KSh)</label>
+                        <input type="number" id="purUnitPrice" placeholder="e.g. 650" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="button" onclick="handleSavePurchase()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl">Save Purchase</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function handleSavePurchase() {
+            const name = document.getElementById('purName').value;
+            const category = document.getElementById('purCategory').value;
+            const packs = parseInt(document.getElementById('purPacks').value) || 1;
+            const packQty = parseInt(document.getElementById('purPackQty').value) || 1;
+            const unitPrice = parseFloat(document.getElementById('purUnitPrice').value) || 0;
+            const total = packs * unitPrice;
+
+            if (!name) { alert('Please enter item name.'); return; }
+
+            purchasesData.unshift({
+                date: nowStamp(),
+                name, category, packs, packQty, unitPrice, total
+            });
+
+            const existingInv = inventoryData.find(i => i.name === name);
+            if (existingInv) {
+                existingInv.packs += packs;
+            } else {
+                inventoryData.push({ name, category, packs, loose: packQty, unitPrice });
+            }
+
+            persistData('cyber_purchases', purchasesData);
+            persistData('cyber_inventory', inventoryData);
+            closeModal();
+            renderPurchasesTable();
+        }
+
+        function renderInventoryTable() {
+            const tbody = document.getElementById('inventoryTableBody');
+            let html = '';
+            inventoryData.forEach((inv, index) => {
+                html += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="p-4 font-bold text-slate-800">${inv.name}</td>
+                        <td class="p-4"><span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-md text-[10px]">${inv.category}</span></td>
+                        <td class="p-4 font-semibold text-emerald-600">${inv.packs}</td>
+                        <td class="p-4">${inv.loose}</td>
+                        <td class="p-4">KSh ${inv.unitPrice.toLocaleString()}</td>
+                        <td class="p-4 text-right">
+                            ${canEdit('inventory') ? `<button onclick="openInventoryEditModal(${index})" class="px-3 py-1 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-semibold text-xs rounded-lg transition">Edit Price/Stock</button>` : '<span class="text-[10px] text-slate-400">View only</span>'}
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html || `<tr><td colspan="6" class="text-center py-6 text-slate-400">No inventory balances found.</td></tr>`;
+        }
+
+        function openInventoryItemModal() {
+            activeModalType = 'addInventory';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = 'Add Inventory Item';
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Item Name</label>
+                        <input type="text" id="invName" placeholder="e.g. Laminating Pouches" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+                        <input type="text" id="invCategory" placeholder="e.g. Binding Consumables" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Initial Packs</label>
+                        <input type="number" id="invPacks" value="1" min="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Initial Loose Pieces</label>
+                        <input type="number" id="invLoose" value="100" min="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Unit Price (KSh)</label>
+                        <input type="number" id="invPrice" placeholder="e.g. 500" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="button" onclick="saveNewInventoryItem()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl">Save Item</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function saveNewInventoryItem() {
+            const name = document.getElementById('invName').value;
+            const category = document.getElementById('invCategory').value;
+            const packs = parseInt(document.getElementById('invPacks').value) || 0;
+            const loose = parseInt(document.getElementById('invLoose').value) || 0;
+            const unitPrice = parseFloat(document.getElementById('invPrice').value) || 0;
+
+            if (!name) { alert('Please enter item name.'); return; }
+            inventoryData.push({ name, category, packs, loose, unitPrice });
+            persistData('cyber_inventory', inventoryData);
+            closeModal();
+            renderInventoryTable();
+        }
+
+        function openInventoryEditModal(index) {
+            const inv = inventoryData[index];
+            activeModalType = 'editInventory';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = `Edit Stock: ${inv.name}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Packs Available</label>
+                        <input type="number" id="editInvPacks" value="${inv.packs}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Loose Pieces Available</label>
+                        <input type="number" id="editInvLoose" value="${inv.loose}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Unit Price (KSh)</label>
+                        <input type="number" id="editInvPrice" value="${inv.unitPrice}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="button" onclick="saveInventoryEdit(${index})" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl">Update Stock</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function saveInventoryEdit(index) {
+            inventoryData[index].packs = parseInt(document.getElementById('editInvPacks').value) || 0;
+            inventoryData[index].loose = parseInt(document.getElementById('editInvLoose').value) || 0;
+            inventoryData[index].unitPrice = parseFloat(document.getElementById('editInvPrice').value) || 0;
+            persistData('cyber_inventory', inventoryData);
+            closeModal();
+            renderInventoryTable();
+        }
+
+        function onReportPeriodChange() {
+            const custom = document.getElementById('reportPeriod').value === 'custom';
+            document.getElementById('reportCustomWrap').classList.toggle('hidden', !custom);
+            if (custom) {
+                const t = todayKey();
+                const f = document.getElementById('reportFrom'), to = document.getElementById('reportTo');
+                if (!f.value) f.value = t;
+                if (!to.value) to.value = t;
+            }
+            renderReportsView();
+        }
+
+        function reportMatches(dateStr) {
+            const period = document.getElementById('reportPeriod')?.value || 'all';
+            if (period !== 'custom') return inPeriod(dateStr, period);
+            let from = document.getElementById('reportFrom').value;
+            let to = document.getElementById('reportTo').value;
+            if (from && to && from > to) [from, to] = [to, from];
+            const key = (dateStr || '').slice(0, 10);
+            return (!from || key >= from) && (!to || key <= to);
+        }
+
+        function reportPeriodLabel() {
+            const sel = document.getElementById('reportPeriod');
+            if (!sel) return 'All Time';
+            if (sel.value !== 'custom') return sel.options[sel.selectedIndex].text;
+            let from = document.getElementById('reportFrom').value, to = document.getElementById('reportTo').value;
+            if (from && to && from > to) [from, to] = [to, from];
+            if (from && from === to) return formatStamp(from);
+            return `${from ? formatStamp(from) : 'Start'} – ${to ? formatStamp(to) : 'Today'}`;
+        }
+
+        function getReportTotals() {
+            const sales = salesData.filter(x => reportMatches(x.date));
+            const expenses = expensesData.filter(x => reportMatches(x.date));
+            const purchases = purchasesData.filter(x => reportMatches(x.date));
+            const totalSales = sales.reduce((a, c) => a + c.total, 0);
+            const totalExpenses = expenses.reduce((a, c) => a + c.amount, 0);
+            return {
+                sales, expenses, purchases, totalSales, totalExpenses,
+                netProfit: totalSales - totalExpenses,
+                cash: sales.filter(x => x.mode === 'Cash').reduce((a, c) => a + c.total, 0),
+                mpesa: sales.filter(x => x.mode === 'M-Pesa').reduce((a, c) => a + c.total, 0),
+                totalPurchases: purchases.reduce((a, c) => a + c.total, 0)
+            };
+        }
+
+        function renderReportsView() {
+            const r = getReportTotals();
+            const type = document.getElementById('reportType')?.value || 'all';
+
+            document.getElementById('reportsSummaryCard').innerHTML = `
+                <p class="text-xs font-bold text-slate-500 uppercase">Period: <span class="text-indigo-600">${reportPeriodLabel()}</span></p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-xs font-bold text-slate-500 uppercase">Gross Revenue</p>
+                        <p class="text-xl font-bold text-slate-900 mt-1">KSh ${r.totalSales.toLocaleString()}</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-xs font-bold text-slate-500 uppercase">Total Expenses</p>
+                        <p class="text-xl font-bold text-rose-600 mt-1">KSh ${r.totalExpenses.toLocaleString()}</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-xs font-bold text-slate-500 uppercase">Net Profit</p>
+                        <p class="text-xl font-bold text-emerald-600 mt-1">KSh ${r.netProfit.toLocaleString()}</p>
+                    </div>
+                </div>
+            `;
+
+            let rows = [];
+            if (type === 'all' || type === 'sale') r.sales.forEach(x => rows.push({ date: x.date, type: 'Sale', details: `${x.service} × ${x.qty}`, cat: x.mode, amount: x.total, sign: '+' }));
+            if (type === 'all' || type === 'expense') r.expenses.forEach(x => rows.push({ date: x.date, type: 'Expense', details: x.particular, cat: x.category, amount: x.amount, sign: '-' }));
+            if (type === 'all' || type === 'purchase') r.purchases.forEach(x => rows.push({ date: x.date, type: 'Stock Purchase', details: `${x.name} × ${x.packs} pack(s)`, cat: x.category, amount: x.total, sign: '' }));
+            rows.sort((a, b) => parseStamp(b.date) - parseStamp(a.date));
+
+            const badge = { 'Sale': 'bg-emerald-50 text-emerald-700', 'Expense': 'bg-rose-50 text-rose-700', 'Stock Purchase': 'bg-amber-50 text-amber-700' };
+            const color = { 'Sale': 'text-emerald-600', 'Expense': 'text-rose-600', 'Stock Purchase': 'text-slate-700' };
+            document.getElementById('reportTxBody').innerHTML = rows.map(x => `
+                <tr class="hover:bg-slate-50/50">
+                    <td class="p-4 text-slate-500 whitespace-nowrap">${formatStamp(x.date)}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 rounded-md font-semibold text-[10px] ${badge[x.type]}">${x.type}</span></td>
+                    <td class="p-4 font-medium text-slate-800">${x.details}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 bg-slate-100 text-slate-700 rounded-md font-semibold text-[10px]">${x.cat}</span></td>
+                    <td class="p-4 text-right font-bold ${color[x.type]}">${x.sign}KSh ${x.amount.toLocaleString()}</td>
+                </tr>`).join('') || `<tr><td colspan="5" class="text-center py-6 text-slate-400">No transactions found.</td></tr>`;
+            document.getElementById('reportTxCount').innerText = `${rows.length} transactions`;
+        }
+
+        function openReportsModal() {
+            const { totalSales, totalExpenses, netProfit } = getReportTotals();
+            activeModalType = 'reports';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = `${businessName} - Financial P&L Statement`;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4 text-xs">
+                    <div class="p-4 bg-slate-50 rounded-xl space-y-2">
+                        <p class="font-bold text-slate-700">Statement Period: ${reportPeriodLabel()}</p>
+                        <div class="flex justify-between py-1 border-b"><span>Total Gross Collections:</span><span class="font-bold text-indigo-600">KSh ${totalSales.toLocaleString()}</span></div>
+                        <div class="flex justify-between py-1 border-b"><span>Total Operational Expenses:</span><span class="font-bold text-rose-600">KSh ${totalExpenses.toLocaleString()}</span></div>
+                        <div class="flex justify-between py-1 font-bold text-sm"><span>Net Operating Income:</span><span class="text-emerald-600">KSh ${netProfit.toLocaleString()}</span></div>
+                    </div>
+                    <div class="flex justify-end pt-2"><button onclick="closeModal()" class="px-4 py-2 bg-slate-800 text-white rounded-xl font-semibold">Close Report</button></div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function openSettingsManagerModal() {
+            activeModalType = 'settingsManager';
+            const modal = document.getElementById('universalModal');
+            document.getElementById('modalTitle').innerText = 'Configure Business Name';
+            document.getElementById('modalBody').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Business Name / Brand</label>
+                        <input type="text" id="settingBusinessName" value="${businessName}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" required>
+                    </div>
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="button" onclick="saveBusinessSettings()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl">Save Settings</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function saveBusinessSettings() {
+            const val = document.getElementById('settingBusinessName').value.trim();
+            if (val) {
+                businessName = val;
+                localStorage.setItem('cyber_brand_name', businessName);
+                if (window.cloud) window.cloud.setBrand(businessName);
+                applyBrandName();
+                closeModal();
+                alert('Business name updated successfully!');
+            }
+        }
+
+        // ==================== BATCH UPLOAD PROCESSOR ====================
+        function processCentralizedBatchUpload() {
+            const target = document.getElementById('batchUploadTarget').value;
+            const textContent = document.getElementById('batchUploadText').value.trim();
+
+            if (!textContent) {
+                alert('Please paste or upload valid CSV rows before saving.');
+                return;
+            }
+
+            const rows = textContent.split('\n').map(r => r.trim()).filter(r => r);
+            let addedCount = 0;
+
+            rows.forEach((row, index) => {
+                const separator = row.includes(',') ? ',' : '|';
+                const cols = row.split(separator).map(c => c.trim());
+                
+                if (index === 0 && (cols[0].toLowerCase().includes('item') || cols[0].toLowerCase().includes('service') || cols[0].toLowerCase().includes('type'))) {
+                    return;
+                }
+
+                if (target === 'services' && cols.length >= 4) {
+                    servicesData.push({ type: cols[0], name: cols[1], mappedItem: cols[2], price: parseFloat(cols[3]) || 0 });
+                    addedCount++;
+                } else if (target === 'inventory' && cols.length >= 5) {
+                    inventoryData.push({ name: cols[0], category: cols[1], packs: parseInt(cols[2]) || 0, loose: parseInt(cols[3]) || 0, unitPrice: parseFloat(cols[4]) || 0 });
+                    addedCount++;
+                } else if (target === 'purchases' && cols.length >= 6) {
+                    const packs = parseInt(cols[2]) || 1;
+                    const packQty = parseInt(cols[3]) || 500;
+                    const unitPrice = parseFloat(cols[4]) || 0;
+                    const total = parseFloat(cols[5]) || (packs * unitPrice);
+
+                    purchasesData.unshift({
+                        date: nowStamp(),
+                        name: cols[0],
+                        category: cols[1],
+                        packs: packs,
+                        packQty: packQty,
+                        unitPrice: unitPrice,
+                        total: total
+                    });
+
+                    const existingInv = inventoryData.find(i => i.name === cols[0]);
+                    if (existingInv) {
+                        existingInv.packs += packs;
+                    } else {
+                        inventoryData.push({ name: cols[0], category: cols[1], packs: packs, loose: packQty, unitPrice: unitPrice });
+                    }
+                    addedCount++;
+                }
+            });
+
+            if (target === 'services') persistData('cyber_services', servicesData);
+            if (target === 'inventory') persistData('cyber_inventory', inventoryData);
+            if (target === 'purchases') {
+                persistData('cyber_purchases', purchasesData);
+                persistData('cyber_inventory', inventoryData);
+            }
+
+            alert(`Successfully added ${addedCount} batch items to ${target}!`);
+            document.getElementById('batchUploadText').value = '';
+            switchTab(target);
+        }
+
+        (function guardActions() {
+            const guards = {
+                openServiceModal: 'services:edit', openEditServiceModal: 'services:edit', handleSaveService: 'services:edit',
+                saveServiceEdit: 'services:edit', deleteService: 'services:edit',
+                openInventoryItemModal: 'inventory:edit', saveNewInventoryItem: 'inventory:edit',
+                openInventoryEditModal: 'inventory:edit', saveInventoryEdit: 'inventory:edit',
+                openPurchaseModal: 'purchases:edit', handleSavePurchase: 'purchases:edit',
+                processCentralizedBatchUpload: 'batchUpload:edit',
+                openReportsModal: 'reports', openSettingsManagerModal: 'settings:edit', uploadLocalToCloud: 'settings:edit',
+                saveBusinessSettings: 'settings:edit', resetAllData: 'settings:edit',
+                openSaleModal: 'sales:edit', handleSaveSale: 'sales:edit', deleteSale: 'sales:edit',
+                openExpenseModal: 'expenses:edit', handleSaveExpense: 'expenses:edit', deleteExpense: 'expenses:edit'
+            };
+            Object.entries(guards).forEach(([name, rule]) => {
+                const original = window[name];
+                if (typeof original !== 'function') return;
+                const [tab, mode] = rule.split(':');
+                window[name] = function (...args) {
+                    if (!(mode === 'edit' ? canEdit(tab) : canView(tab))) {
+                        alert('Your account does not have permission to do this.');
+                        return;
+                    }
+                    return original.apply(this, args);
+                };
+            });
+        })();
+
+        function closeModal() {
+            document.getElementById('universalModal').classList.add('hidden');
+            activeModalType = null;
+            flushPendingCloud();
+        }
+
+        async function resetAllData() {
+            if (!confirm('This will DELETE ALL sales, expenses, services, purchases and stock on EVERY device. Continue?')) return;
+            if (!confirm('Final warning: this cannot be undone. Delete everything?')) return;
+            try { if (window.cloud) await window.cloud.clearAll(); } catch (e) { alert('Could not clear cloud data: ' + e.message); return; }
+            localStorage.clear();
+            location.reload();
+        }
+    </script>
+</body>
+</html>
