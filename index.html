@@ -52,9 +52,6 @@
                     Sign In
                 </button>
             </form>
-            <div class="mt-4 text-center text-xs text-slate-400">
-                Default Credentials: <span class="font-semibold text-slate-600">admin / admin123</span>
-            </div>
         </div>
     </div>
 
@@ -181,4 +178,155 @@
 
                 <!-- 5. INVENTORY TAB -->
                 <div id="tab-inventory" class="tab-content hidden space-y-6">
-                    <div class="
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                        <h3 class="font-bold text-slate-900 mb-4">Stock Inventory</h3>
+                        <div id="inventoryList" class="space-y-2 text-xs">Loading inventory from Firebase...</div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Firebase Connection & Application Logic -->
+    <script>
+        // YOUR FIREBASE CONFIGURATION (From Firebase Console)[cite: 3]
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-IrYUD93iziTmJ2SNP-zPX8dbjdVPXg",
+            authDomain: "cyberpro-1a339.firebaseapp.com",
+            databaseURL: "https://cyberpro-1a339-default-rtdb.firebaseio.com",
+            projectId: "cyberpro-1a339",
+            storageBucket: "cyberpro-1a339.appspot.com",
+            messagingSenderId: "928496899763",
+            appId: "1:928496899763:web:aa7997f8f2e04be5ad42c6"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Check Connection Status
+        db.ref(".info/connected").on("value", function(snap) {
+            if (snap.val() === true) {
+                document.getElementById('syncIndicatorDot').className = "h-2 w-2 rounded-full bg-emerald-500";
+                document.getElementById('syncIndicatorText').textContent = "Cloud Live Sync Active";
+                document.getElementById('syncStatus').className = "px-3 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-600";
+                document.getElementById('syncStatus').textContent = "● Connected";
+            } else {
+                document.getElementById('syncIndicatorDot').className = "h-2 w-2 rounded-full bg-rose-500";
+                document.getElementById('syncIndicatorText').textContent = "Disconnected";
+                document.getElementById('syncStatus').className = "px-3 py-1 text-xs font-semibold rounded-full bg-rose-50 text-rose-600";
+                document.getElementById('syncStatus').textContent = "○ Offline";
+            }
+        });
+
+        // Handle Login Form Submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('username').value.trim().toLowerCase();
+            const passwordInput = document.getElementById('password').value.trim();
+            const errorDiv = document.getElementById('loginError');
+
+            if (usernameInput.length > 0 && passwordInput.length > 0) {
+                errorDiv.classList.add('hidden');
+                localStorage.setItem('cyber_logged_in', 'true');
+                localStorage.setItem('cyber_user', usernameInput);
+
+                document.getElementById('userRoleTitle').textContent = `Manager: ${usernameInput.toUpperCase()}`;
+                document.getElementById('userAvatarInitials').textContent = usernameInput.substring(0, 2).toUpperCase();
+
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('appSection').classList.remove('hidden');
+                
+                initRealtimeListeners();
+            } else {
+                errorDiv.textContent = "Please enter both username and password.";
+                errorDiv.classList.remove('hidden');
+            }
+        });
+
+        // Auto-login check
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('cyber_logged_in') === 'true') {
+                const savedUser = localStorage.getItem('cyber_user') || 'admin';
+                document.getElementById('userRoleTitle').textContent = `Manager: ${savedUser.toUpperCase()}`;
+                document.getElementById('userAvatarInitials').textContent = savedUser.substring(0, 2).toUpperCase();
+                
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('appSection').classList.remove('hidden');
+                
+                initRealtimeListeners();
+            }
+        });
+
+        function handleLogout() {
+            localStorage.removeItem('cyber_logged_in');
+            localStorage.removeItem('cyber_user');
+            document.getElementById('appSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
+                btn.classList.add('hover:bg-slate-800', 'text-slate-300');
+            });
+
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            const targetBtn = document.getElementById(`nav-${tabId}`);
+
+            if (targetTab) targetTab.classList.remove('hidden');
+            if (targetBtn) {
+                targetBtn.classList.remove('hover:bg-slate-800', 'text-slate-300');
+                targetBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
+            }
+        }
+
+        // Real-Time Firebase Listeners for Multi-Device Sync
+        function initRealtimeListeners() {
+            // 1. Sales Listener
+            db.ref('cybercafe/sales').on('value', (snapshot) => {
+                const data = snapshot.val();
+                let totalSales = 0, cashSales = 0, mpesaSales = 0;
+                let html = '<ul class="divide-y divide-slate-100">';
+
+                if (!data) {
+                    document.getElementById('salesList').innerHTML = '<p class="text-slate-400">No sales recorded yet.</p>';
+                } else {
+                    Object.values(data).forEach(sale => {
+                        const amt = Number(sale.total) || 0;
+                        totalSales += amt;
+                        if (sale.mode === 'Cash') cashSales += amt; else mpesaSales += amt;
+
+                        html += `<li class="py-2 flex justify-between items-center">
+                            <span><b>${sale.service || sale.name || 'Service'}</b> (Qty: ${sale.qty || 1}) - <span class="text-slate-500">${sale.date || ''}</span></span>
+                            <span class="font-bold text-indigo-600">KSh ${amt} (${sale.mode || 'Cash'})</span>
+                        </li>`;
+                    });
+                    html += '</ul>';
+                    document.getElementById('salesList').innerHTML = html;
+                }
+
+                document.getElementById('dashTotalSales').textContent = `KSh ${totalSales}`;
+                document.getElementById('dashCashSales').textContent = `KSh ${cashSales}`;
+                document.getElementById('dashMpesaSales').textContent = `KSh ${mpesaSales}`;
+            });
+
+            // 2. Services Listener
+            db.ref('cybercafe/services').on('value', (snapshot) => {
+                const data = snapshot.val();
+                let html = '<ul class="divide-y divide-slate-100">';
+                if (!data) {
+                    html = '<p class="text-slate-400">No services found.</p>';
+                } else {
+                    Object.values(data).forEach(srv => {
+                        html += `<li class="py-2 flex justify-between"><span>${srv.name}</span><b class="text-indigo-600">KSh ${srv.price}</b></li>`;
+                    });
+                    html += '</ul>';
+                }
+                document.getElementById('servicesList').innerHTML = html;
+            });
+
+            // 3. Expenses Listener
+            db.
