@@ -220,29 +220,63 @@
             }
         });
 
-        // Handle Login Form Submission
+        // Handle Login Form Submission against Firebase Users Node with Fallback
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const usernameInput = document.getElementById('username').value.trim().toLowerCase();
             const passwordInput = document.getElementById('password').value.trim();
             const errorDiv = document.getElementById('loginError');
 
-            if (usernameInput.length > 0 && passwordInput.length > 0) {
-                errorDiv.classList.add('hidden');
-                localStorage.setItem('cyber_logged_in', 'true');
-                localStorage.setItem('cyber_user', usernameInput);
+            db.ref('cybercafe/users').once('value').then((snapshot) => {
+                const users = snapshot.val();
+                let matchedUser = null;
 
-                document.getElementById('userRoleTitle').textContent = `Manager: ${usernameInput.toUpperCase()}`;
-                document.getElementById('userAvatarInitials').textContent = usernameInput.substring(0, 2).toUpperCase();
+                if (users) {
+                    Object.values(users).forEach(u => {
+                        if (u.u && u.u.toLowerCase() === usernameInput && u.p === passwordInput) {
+                            matchedUser = u;
+                        }
+                    });
+                }
 
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('appSection').classList.remove('hidden');
-                
-                initRealtimeListeners();
-            } else {
-                errorDiv.textContent = "Please enter both username and password.";
-                errorDiv.classList.remove('hidden');
-            }
+                // Default fallback credentials for immediate access
+                if (!matchedUser && usernameInput === 'admin' && passwordInput === 'admin123') {
+                    matchedUser = { u: 'admin', name: 'Admin', role: 'admin' };
+                } else if (!matchedUser && usernameInput === 'staff' && passwordInput === 'staff123') {
+                    matchedUser = { u: 'staff', name: 'Staff', role: 'staff' };
+                }
+
+                if (matchedUser) {
+                    errorDiv.classList.add('hidden');
+                    localStorage.setItem('cyber_logged_in', 'true');
+                    localStorage.setItem('cyber_user', matchedUser.u);
+
+                    document.getElementById('userRoleTitle').textContent = `Manager: ${matchedUser.name.toUpperCase()}`;
+                    document.getElementById('userAvatarInitials').textContent = matchedUser.name.substring(0, 2).toUpperCase();
+
+                    document.getElementById('loginSection').classList.add('hidden');
+                    document.getElementById('appSection').classList.remove('hidden');
+                    
+                    initRealtimeListeners();
+                } else {
+                    errorDiv.textContent = "Invalid username or password. Check credentials.";
+                    errorDiv.classList.remove('hidden');
+                }
+            }).catch((err) => {
+                console.error("Login lookup error:", err);
+                // Allow fallback login even if database read fails offline
+                if (usernameInput === 'admin' && passwordInput === 'admin123') {
+                    errorDiv.classList.add('hidden');
+                    localStorage.setItem('cyber_logged_in', 'true');
+                    localStorage.setItem('cyber_user', 'admin');
+                    document.getElementById('loginSection').classList.add('hidden');
+                    document.getElementById('appSection').classList.remove('hidden');
+                    initRealtimeListeners();
+                } else {
+                    errorDiv.textContent = "Authentication connection error.";
+                    errorDiv.classList.remove('hidden');
+                }
+            });
         });
 
         // Auto-login check
@@ -329,4 +363,35 @@
             });
 
             // 3. Expenses Listener
-            db.
+            db.ref('cybercafe/expenses').on('value', (snapshot) => {
+                const data = snapshot.val();
+                let html = '<ul class="divide-y divide-slate-100">';
+                if (!data) {
+                    html = '<p class="text-slate-400">No expenses recorded.</p>';
+                } else {
+                    Object.values(data).forEach(exp => {
+                        html += `<li class="py-2 flex justify-between"><span>${exp.particular} (${exp.category})</span><b class="text-rose-600">KSh ${exp.amount}</b></li>`;
+                    });
+                    html += '</ul>';
+                }
+                document.getElementById('expensesList').innerHTML = html;
+            });
+
+            // 4. Inventory Listener
+            db.ref('cybercafe/inventory').on('value', (snapshot) => {
+                const data = snapshot.val();
+                let html = '<ul class="divide-y divide-slate-100">';
+                if (!data) {
+                    html = '<p class="text-slate-400">No inventory items found.</p>';
+                } else {
+                    Object.values(data).forEach(inv => {
+                        html += `<li class="py-2 flex justify-between"><span>${inv.name} (${inv.category})</span><span>Loose: <b>${inv.loose}</b> | Packs: <b>${inv.packs}</b></span></li>`;
+                    });
+                    html += '</ul>';
+                }
+                document.getElementById('inventoryList').innerHTML = html;
+            });
+        }
+    </script>
+</body>
+</html>
