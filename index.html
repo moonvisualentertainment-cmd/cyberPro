@@ -9,6 +9,17 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        .lbl { display: block; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #475569; margin-bottom: .35rem; }
+        .inp { width: 100%; padding: .6rem .8rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: .75rem; font-size: .8rem; color: #1e293b; }
+        .inp:focus { outline: 2px solid #6366f1; background: #fff; }
+        .btn-primary, .btn-ghost, .btn-danger { padding: .6rem 1rem; font-weight: 600; font-size: .75rem; border-radius: .75rem; transition: background .15s; }
+        .btn-primary { background: #4f46e5; color: #fff; } .btn-primary:hover { background: #4338ca; }
+        .btn-ghost { background: #f1f5f9; color: #334155; } .btn-ghost:hover { background: #e2e8f0; }
+        .btn-danger { background: #fff1f2; color: #e11d48; } .btn-danger:hover { background: #ffe4e6; }
+        .lnk { font-weight: 600; color: #4f46e5; cursor: pointer; } .lnk:hover { text-decoration: underline; } .lnk.red { color: #e11d48; }
+        @media print { body * { visibility: hidden; } #modalBox, #modalBox * { visibility: visible; } #modalBox { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; } .no-print { display: none !important; } }
+    </style>
 </head>
 <body class="bg-slate-900 min-h-screen font-sans text-slate-800">
 
@@ -84,21 +95,35 @@
                     <button onclick="switchTab('services')" id="nav-services" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
                         <span>Services Directory</span>
                     </button>
-                    <button onclick="switchTab('sales')" id="nav-sales" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
-                        <span>Sales Ledger</span>
+                    <button onclick="switchTab('purchases')" id="nav-purchases" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Stock Purchases</span>
+                    </button>
+                    <button onclick="switchTab('inventory')" id="nav-inventory" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Stock Inventory</span>
+                    </button>
+                    <button onclick="switchTab('batchUpload')" id="nav-batchUpload" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>📦 Batch Upload Center</span>
                     </button>
                     <button onclick="switchTab('expenses')" id="nav-expenses" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
                         <span>Expenses</span>
                     </button>
-                    <button onclick="switchTab('inventory')" id="nav-inventory" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
-                        <span>Stock Inventory</span>
+                    <button onclick="switchTab('sales')" id="nav-sales" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Sales Ledger</span>
+                    </button>
+
+                    <p id="adminNavHeading" class="px-3 pt-6 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Administration</p>
+                    <button onclick="switchTab('reports')" id="nav-reports" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Reports</span>
+                    </button>
+                    <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition hover:bg-slate-800 text-slate-300">
+                        <span>Settings & Manager</span>
                     </button>
                 </div>
             </div>
 
             <!-- Sidebar Footer Status -->
             <div class="p-4 border-t border-slate-800 bg-slate-950/40">
-                <p class="text-xs text-slate-500 uppercase font-semibold">Firebase Cloud Sync</p>
+                <p class="text-xs text-slate-500 uppercase font-semibold">Firebase Cloud Status</p>
                 <div class="flex items-center space-x-2 mt-1">
                     <span id="syncIndicatorDot" class="h-2 w-2 rounded-full bg-amber-500"></span>
                     <span id="syncIndicatorText" class="text-xs text-slate-300 font-medium">Connecting...</span>
@@ -112,10 +137,11 @@
             <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center shadow-xs">
                 <div>
                     <h2 id="headerTitle" class="text-xl font-bold text-slate-900">Dashboard Overview</h2>
-                    <p id="headerSubtitle" class="text-xs text-slate-500">Real-time multi-device cloud collections and live analytics.</p>
+                    <p id="headerSubtitle" class="text-xs text-slate-500">Real-time collections, payment breakdown, and today's service performance.</p>
                 </div>
                 <div class="flex items-center space-x-4">
                     <span id="syncStatus" class="px-3 py-1 text-xs font-semibold rounded-full bg-amber-50 text-amber-600">○ Syncing...</span>
+                    <span class="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded-full" id="currentDateDisplay">Tue, 13 Oct 2026</span>
                     <div class="flex items-center space-x-3 border-l pl-4 border-slate-200">
                         <div class="text-right">
                             <p class="text-xs font-bold text-slate-900" id="userRoleTitle">Manager: ADMIN</p>
@@ -135,263 +161,4 @@
             <main class="flex-1 p-8 overflow-y-auto">
 
                 <!-- 1. DASHBOARD TAB -->
-                <div id="tab-dashboard" class="tab-content space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Sales (Cloud)</p>
-                            <h3 class="text-2xl font-bold mt-2 text-slate-900" id="dashTotalSales">KSh 0</h3>
-                        </div>
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Cash Received</p>
-                            <h3 class="text-2xl font-bold mt-2 text-emerald-600" id="dashCashSales">KSh 0</h3>
-                        </div>
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">M-Pesa Received</p>
-                            <h3 class="text-2xl font-bold mt-2 text-indigo-600" id="dashMpesaSales">KSh 0</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. SERVICES TAB -->
-                <div id="tab-services" class="tab-content hidden space-y-6">
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-                        <h3 class="font-bold text-slate-900 mb-4">Services Directory</h3>
-                        <div id="servicesList" class="space-y-2 text-xs">Loading services from Firebase...</div>
-                    </div>
-                </div>
-
-                <!-- 3. SALES TAB -->
-                <div id="tab-sales" class="tab-content hidden space-y-6">
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-                        <h3 class="font-bold text-slate-900 mb-4">Live Sales Ledger</h3>
-                        <div id="salesList" class="space-y-2 text-xs">Loading sales from Firebase...</div>
-                    </div>
-                </div>
-
-                <!-- 4. EXPENSES TAB -->
-                <div id="tab-expenses" class="tab-content hidden space-y-6">
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-                        <h3 class="font-bold text-slate-900 mb-4">Operational Expenses</h3>
-                        <div id="expensesList" class="space-y-2 text-xs">Loading expenses from Firebase...</div>
-                    </div>
-                </div>
-
-                <!-- 5. INVENTORY TAB -->
-                <div id="tab-inventory" class="tab-content hidden space-y-6">
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-                        <h3 class="font-bold text-slate-900 mb-4">Stock Inventory</h3>
-                        <div id="inventoryList" class="space-y-2 text-xs">Loading inventory from Firebase...</div>
-                    </div>
-                </div>
-
-            </main>
-        </div>
-    </div>
-
-    <!-- Firebase Connection & Application Logic -->
-    <script>
-        // YOUR FIREBASE CONFIGURATION (From Firebase Console)[cite: 3]
-        const firebaseConfig = {
-            apiKey: "AIzaSyA-IrYUD93iziTmJ2SNP-zPX8dbjdVPXg",
-            authDomain: "cyberpro-1a339.firebaseapp.com",
-            databaseURL: "https://cyberpro-1a339-default-rtdb.firebaseio.com",
-            projectId: "cyberpro-1a339",
-            storageBucket: "cyberpro-1a339.appspot.com",
-            messagingSenderId: "928496899763",
-            appId: "1:928496899763:web:aa7997f8f2e04be5ad42c6"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        // Check Connection Status
-        db.ref(".info/connected").on("value", function(snap) {
-            if (snap.val() === true) {
-                document.getElementById('syncIndicatorDot').className = "h-2 w-2 rounded-full bg-emerald-500";
-                document.getElementById('syncIndicatorText').textContent = "Cloud Live Sync Active";
-                document.getElementById('syncStatus').className = "px-3 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-600";
-                document.getElementById('syncStatus').textContent = "● Connected";
-            } else {
-                document.getElementById('syncIndicatorDot').className = "h-2 w-2 rounded-full bg-rose-500";
-                document.getElementById('syncIndicatorText').textContent = "Disconnected";
-                document.getElementById('syncStatus').className = "px-3 py-1 text-xs font-semibold rounded-full bg-rose-50 text-rose-600";
-                document.getElementById('syncStatus').textContent = "○ Offline";
-            }
-        });
-
-        // Handle Login Form Submission against Firebase Users Node with Fallback
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const usernameInput = document.getElementById('username').value.trim().toLowerCase();
-            const passwordInput = document.getElementById('password').value.trim();
-            const errorDiv = document.getElementById('loginError');
-
-            db.ref('cybercafe/users').once('value').then((snapshot) => {
-                const users = snapshot.val();
-                let matchedUser = null;
-
-                if (users) {
-                    Object.values(users).forEach(u => {
-                        if (u.u && u.u.toLowerCase() === usernameInput && u.p === passwordInput) {
-                            matchedUser = u;
-                        }
-                    });
-                }
-
-                // Default fallback credentials for immediate access
-                if (!matchedUser && usernameInput === 'admin' && passwordInput === 'admin123') {
-                    matchedUser = { u: 'admin', name: 'Admin', role: 'admin' };
-                } else if (!matchedUser && usernameInput === 'staff' && passwordInput === 'staff123') {
-                    matchedUser = { u: 'staff', name: 'Staff', role: 'staff' };
-                }
-
-                if (matchedUser) {
-                    errorDiv.classList.add('hidden');
-                    localStorage.setItem('cyber_logged_in', 'true');
-                    localStorage.setItem('cyber_user', matchedUser.u);
-
-                    document.getElementById('userRoleTitle').textContent = `Manager: ${matchedUser.name.toUpperCase()}`;
-                    document.getElementById('userAvatarInitials').textContent = matchedUser.name.substring(0, 2).toUpperCase();
-
-                    document.getElementById('loginSection').classList.add('hidden');
-                    document.getElementById('appSection').classList.remove('hidden');
-                    
-                    initRealtimeListeners();
-                } else {
-                    errorDiv.textContent = "Invalid username or password. Check credentials.";
-                    errorDiv.classList.remove('hidden');
-                }
-            }).catch((err) => {
-                console.error("Login lookup error:", err);
-                // Allow fallback login even if database read fails offline
-                if (usernameInput === 'admin' && passwordInput === 'admin123') {
-                    errorDiv.classList.add('hidden');
-                    localStorage.setItem('cyber_logged_in', 'true');
-                    localStorage.setItem('cyber_user', 'admin');
-                    document.getElementById('loginSection').classList.add('hidden');
-                    document.getElementById('appSection').classList.remove('hidden');
-                    initRealtimeListeners();
-                } else {
-                    errorDiv.textContent = "Authentication connection error.";
-                    errorDiv.classList.remove('hidden');
-                }
-            });
-        });
-
-        // Auto-login check
-        window.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('cyber_logged_in') === 'true') {
-                const savedUser = localStorage.getItem('cyber_user') || 'admin';
-                document.getElementById('userRoleTitle').textContent = `Manager: ${savedUser.toUpperCase()}`;
-                document.getElementById('userAvatarInitials').textContent = savedUser.substring(0, 2).toUpperCase();
-                
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('appSection').classList.remove('hidden');
-                
-                initRealtimeListeners();
-            }
-        });
-
-        function handleLogout() {
-            localStorage.removeItem('cyber_logged_in');
-            localStorage.removeItem('cyber_user');
-            document.getElementById('appSection').classList.add('hidden');
-            document.getElementById('loginSection').classList.remove('hidden');
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
-                btn.classList.add('hover:bg-slate-800', 'text-slate-300');
-            });
-
-            const targetTab = document.getElementById(`tab-${tabId}`);
-            const targetBtn = document.getElementById(`nav-${tabId}`);
-
-            if (targetTab) targetTab.classList.remove('hidden');
-            if (targetBtn) {
-                targetBtn.classList.remove('hover:bg-slate-800', 'text-slate-300');
-                targetBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-600/30');
-            }
-        }
-
-        // Real-Time Firebase Listeners for Multi-Device Sync
-        function initRealtimeListeners() {
-            // 1. Sales Listener
-            db.ref('cybercafe/sales').on('value', (snapshot) => {
-                const data = snapshot.val();
-                let totalSales = 0, cashSales = 0, mpesaSales = 0;
-                let html = '<ul class="divide-y divide-slate-100">';
-
-                if (!data) {
-                    document.getElementById('salesList').innerHTML = '<p class="text-slate-400">No sales recorded yet.</p>';
-                } else {
-                    Object.values(data).forEach(sale => {
-                        const amt = Number(sale.total) || 0;
-                        totalSales += amt;
-                        if (sale.mode === 'Cash') cashSales += amt; else mpesaSales += amt;
-
-                        html += `<li class="py-2 flex justify-between items-center">
-                            <span><b>${sale.service || sale.name || 'Service'}</b> (Qty: ${sale.qty || 1}) - <span class="text-slate-500">${sale.date || ''}</span></span>
-                            <span class="font-bold text-indigo-600">KSh ${amt} (${sale.mode || 'Cash'})</span>
-                        </li>`;
-                    });
-                    html += '</ul>';
-                    document.getElementById('salesList').innerHTML = html;
-                }
-
-                document.getElementById('dashTotalSales').textContent = `KSh ${totalSales}`;
-                document.getElementById('dashCashSales').textContent = `KSh ${cashSales}`;
-                document.getElementById('dashMpesaSales').textContent = `KSh ${mpesaSales}`;
-            });
-
-            // 2. Services Listener
-            db.ref('cybercafe/services').on('value', (snapshot) => {
-                const data = snapshot.val();
-                let html = '<ul class="divide-y divide-slate-100">';
-                if (!data) {
-                    html = '<p class="text-slate-400">No services found.</p>';
-                } else {
-                    Object.values(data).forEach(srv => {
-                        html += `<li class="py-2 flex justify-between"><span>${srv.name}</span><b class="text-indigo-600">KSh ${srv.price}</b></li>`;
-                    });
-                    html += '</ul>';
-                }
-                document.getElementById('servicesList').innerHTML = html;
-            });
-
-            // 3. Expenses Listener
-            db.ref('cybercafe/expenses').on('value', (snapshot) => {
-                const data = snapshot.val();
-                let html = '<ul class="divide-y divide-slate-100">';
-                if (!data) {
-                    html = '<p class="text-slate-400">No expenses recorded.</p>';
-                } else {
-                    Object.values(data).forEach(exp => {
-                        html += `<li class="py-2 flex justify-between"><span>${exp.particular} (${exp.category})</span><b class="text-rose-600">KSh ${exp.amount}</b></li>`;
-                    });
-                    html += '</ul>';
-                }
-                document.getElementById('expensesList').innerHTML = html;
-            });
-
-            // 4. Inventory Listener
-            db.ref('cybercafe/inventory').on('value', (snapshot) => {
-                const data = snapshot.val();
-                let html = '<ul class="divide-y divide-slate-100">';
-                if (!data) {
-                    html = '<p class="text-slate-400">No inventory items found.</p>';
-                } else {
-                    Object.values(data).forEach(inv => {
-                        html += `<li class="py-2 flex justify-between"><span>${inv.name} (${inv.category})</span><span>Loose: <b>${inv.loose}</b> | Packs: <b>${inv.packs}</b></span></li>`;
-                    });
-                    html += '</ul>';
-                }
-                document.getElementById('inventoryList').innerHTML = html;
-            });
-        }
-    </script>
-</body>
-</html>
+                <div id="tab-dashboard" class="tab-content space-y
